@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HQ DRIVING COMMAND // PLANER</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Teko:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0f130f;
+      --panel-bg: #182017;
+      --panel-border: #334231;
+      --accent-green: #4d6645;
+      --highlight-yellow: #cfa144;
+      --alert-red: #8b3232;
+      --text-main: #d3dad1;
+      --text-dim: #738370;
+      --slot-bg: #101510;
+      --color-frei: #cfa144;
+      --color-gebucht: #4d6645;
+      --color-pause: #5B7036;
+      --color-theorie: #FF5252;
+      --color-termin: #3498DB;
+      --color-empty: #444444;
+      --color-belegt: #555555;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Share Tech Mono', monospace;
+      padding: 10px;
+    }
+
+    h1, h2, h3 {
+      font-family: 'Teko', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    header {
+      background-color: var(--panel-bg);
+      border: 2px solid var(--panel-border);
+      padding: 15px;
+      margin-bottom: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 0 10px rgba(0,0,0,0.7);
+    }
+
+    .status-tag {
+      background: var(--panel-border);
+      color: var(--highlight-yellow);
+      padding: 2px 8px;
+      font-size: 0.85rem;
+      border: 1px solid var(--highlight-yellow);
+    }
+
+    .view-toggle {
+      display: flex; gap: 5px; margin-bottom: 15px;
+    }
+
+    .btn-mil {
+      background: var(--panel-bg);
+      color: var(--text-main);
+      border: 1px solid var(--accent-green);
+      padding: 8px 14px;
+      cursor: pointer;
+      font-family: 'Share Tech Mono', monospace;
+      text-transform: uppercase;
+      transition: all 0.2s;
+    }
+
+    .btn-mil:hover, .btn-mil.active {
+      background: var(--accent-green);
+      color: #000;
+      font-weight: bold;
+    }
+
+    .btn-alert { border-color: var(--alert-red); }
+    .btn-alert:hover { background: var(--alert-red); color: #fff; }
+
+    /* AUTH CONTAINER */
+    .auth-card {
+      max-width: 420px;
+      margin: 40px auto;
+      background: var(--panel-bg);
+      border: 2px solid var(--panel-border);
+      padding: 25px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.8);
+    }
+
+    .form-group { margin-bottom: 15px; }
+
+    .form-group label {
+      display: block; font-size: 0.8rem; color: var(--text-dim); margin-bottom: 5px;
+    }
+
+    .form-group input, .form-group select {
+      width: 100%; padding: 10px; background: #090c09;
+      border: 1px solid var(--panel-border); color: var(--text-main);
+      font-family: 'Share Tech Mono', monospace;
+    }
+
+    /* SCHEDULE LAYOUT MODES */
+    .schedule-grid { display: grid; gap: 10px; }
+    .mode-handy { grid-template-columns: 1fr; }
+    .mode-tablet { grid-template-columns: repeat(3, 1fr); }
+    @media (min-width: 1200px) { .mode-tablet { grid-template-columns: repeat(6, 1fr); } }
+
+    .day-column {
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      padding: 10px;
+    }
+
+    .day-header {
+      background: var(--panel-border);
+      padding: 6px; text-align: center; font-weight: bold; margin-bottom: 10px;
+      color: var(--highlight-yellow); font-size: 1.1rem;
+      font-family: 'Teko', sans-serif; text-transform: uppercase; letter-spacing: 1px;
+    }
+
+    .slot-card {
+      background: var(--slot-bg);
+      border: 1px solid var(--panel-border);
+      padding: 8px; margin-bottom: 8px; font-size: 0.85rem;
+    }
+
+    .slot-time {
+      font-family: 'Teko', sans-serif; font-size: 1.1rem; color: var(--highlight-yellow);
+      margin-top: 4px; margin-bottom: 4px; text-align: center; letter-spacing: 1px;
+    }
+
+    .slot-time.editable { cursor: pointer; text-decoration: underline; }
+
+    .slot-status {
+      font-weight: bold; cursor: pointer; padding: 5px;
+      background: var(--color-empty);
+      color: #ffffff;
+      border: 1px dashed var(--color-empty); text-align: center; margin-bottom: 4px; user-select: none;
+    }
+
+    .slot-status.frei { background: var(--color-frei); color: #000000; border: 1px solid var(--color-frei); }
+    .slot-status.gebucht { background: var(--color-gebucht); color: #ffffff; border: 1px solid var(--color-gebucht); }
+    .slot-status.pause { background: var(--color-pause); color: #000000; border: 1px solid var(--color-pause); }
+    .slot-status.wartet { background: #ffffff; color: #000000; border: 1px solid #ffffff; }
+    .slot-status.theorie { background: var(--color-theorie); color: #000000; border: 1px solid var(--color-theorie); }
+    .slot-status.termin { background: var(--color-termin); color: #000000; border: 1px solid var(--color-termin); }
+    .slot-status.belegt { background: var(--color-belegt); color: #ffffff; border: 1px solid var(--color-belegt); }
+    .slot-status.empty { background: var(--color-empty); color: #ffffff; border: 1px dashed var(--color-empty); }
+
+    .slot-type {
+      font-size: 0.75rem; color: var(--text-dim); cursor: pointer;
+      text-decoration: underline; user-select: none; margin-top: 4px;
+    }
+
+    .slot-type-fahrprüfung {
+      color: #ff3333 !important;
+      font-weight: bold;
+    }
+
+    .admin-panel {
+      background: var(--panel-bg);
+      border: 2px solid var(--highlight-yellow);
+      padding: 15px; margin-bottom: 20px;
+    }
+
+    .stats-bar {
+      background: #070907; border-top: 1px solid var(--panel-border);
+      padding: 6px; margin-top: 10px; font-size: 0.75rem;
+      display: flex; justify-content: space-between;
+    }
+
+    /* MODAL */
+    .modal {
+      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.85); justify-content: center; align-items: center; z-index: 1000;
+    }
+
+    .modal-content {
+      background: var(--panel-bg); border: 2px solid var(--highlight-yellow);
+      padding: 20px; width: 95%; max-width: 550px;
+    }
+
+    .modal-actions {
+      display: flex; gap: 6px; flex-wrap: wrap; justify-content: space-between; margin-top: 15px;
+    }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div>
+      <h1>HQ DRIVING COMMAND <span class="status-tag">v1.0</span></h1>
+      <div id="user-info" class="status-tag">STATUS: ABGEMELDET</div>
+    </div>
+    <div id="header-actions">
+      <button id="logout-btn" class="btn-mil btn-alert hidden">Abmelden</button>
+    </div>
+  </header>
+
+  <!-- AUTH SECTION -->
+  <div id="auth-section">
+    <div class="auth-card">
+      <h2>[ ANMELDUNG ]</h2>
+      <p style="font-size:0.8rem; color:var(--text-dim); margin-bottom:15px;">
+        Fahrschüler: Vom Fahrlehrer angelegten Namen eingeben. Bei der Erst-Anmeldung vergibst du deine eigene PIN.
+      </p>
+      
+      <div class="form-group">
+        <label>VOR- & NACHNAME</label>
+        <input type="text" id="login-id" placeholder="z. B. Max Mustermann">
+      </div>
+      
+      <div class="form-group" id="pin-group">
+        <label>PIN (4-STELLIG)</label>
+        <input type="password" id="login-pin" placeholder="****" maxlength="4">
+      </div>
+
+      <button id="login-btn" class="btn-mil" style="width: 100%;">EINLOGGEN</button>
+      
+      <div id="first-login-notice" class="hidden" style="margin-top: 15px; border-top: 1px solid var(--panel-border); padding-top: 10px;">
+        <p style="font-size: 0.75rem; color: var(--highlight-yellow);">Willkommen! Bitte vergib bei deiner ersten Anmeldung deine eigene 4-stellige PIN:</p>
+        <div class="form-group" style="margin-top: 10px;">
+          <input type="password" id="new-pin" placeholder="Neue Wunsch-PIN" maxlength="4">
+        </div>
+        <button id="set-pin-btn" class="btn-mil" style="width: 100%;">PIN SPEICHERN & EINLOGGEN</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN APP SECTION -->
+  <div id="app-screen" class="hidden">
+
+    <div class="view-toggle">
+      <button id="btn-mode-handy" class="btn-mil">Modus: Handy</button>
+      <button id="btn-mode-tablet" class="btn-mil active">Modus: Tablet</button>
+    </div>
+
+    <!-- ADMIN PANEL -->
+    <div id="admin-panel" class="admin-panel hidden">
+      <h3>COMMANDER PANEL (FAHRLEHRER)</h3>
+      <div style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;">
+        <input type="text" id="new-student-name" placeholder="Name des neuen Fahrschülers" style="flex: 1; min-width: 200px; padding: 8px; background: #000; color: #fff; border: 1px solid var(--panel-border);">
+        <button id="add-student-btn" class="btn-mil">+ Fahrschüler anlegen</button>
+        <button id="reset-times-btn" class="btn-mil btn-alert">Zeiten auf DSTT zurücksetzen</button>
+      </div>
+    </div>
+
+    <!-- WOCHENPLAN -->
+    <div class="schedule-grid mode-tablet" id="schedule-container"></div>
+  </div>
+
+  <!-- BOOKING / ASSIGNMENT MODAL -->
+  <div id="booking-modal" class="modal">
+    <div class="modal-content">
+      <h3 id="modal-title">FAHRSTUNDE BUCHEN / VERGEBEN</h3>
+      <div class="form-group" id="student-select-group">
+        <label>FAHRSCHÜLER WÄHLEN</label>
+        <select id="modal-student-select"></select>
+      </div>
+      
+      <!-- NEU: Fahrttyp-Auswahl direkt im Modal -->
+      <div class="form-group" id="lesson-type-group">
+        <label>FAHRTSTUNDEN-TYP WÄHLEN</label>
+        <select id="modal-lesson-type-select">
+          <option value="Übungsfahrt">Übungsfahrt</option>
+          <option value="Sonderfahrt">Sonderfahrt</option>
+          <option value="Prüfungsvorbereitung">Prüfungsvorbereitung</option>
+          <option value="Prüfungssimulation">Prüfungssimulation</option>
+          <option value="Fahrprüfung">Fahrprüfung</option>
+          <option value="Schaltwagen">Schaltwagen</option>
+          <option value="Termin">Termin</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>ABHOLORT WÄHLEN</label>
+        <select id="modal-location-select">
+          <option value="Biedenkopf, Fahrschule">Biedenkopf, Fahrschule</option>
+          <option value="Biedenkopf, Bahnhof">Biedenkopf, Bahnhof</option>
+          <option value="Biedenkopf, Wissenscampus">Biedenkopf, Wissenscampus</option>
+          <option value="Biedenkopf, Marktplatz">Biedenkopf, Marktplatz</option>
+          <option value="Biedenkopf, Kaufland">Biedenkopf, Kaufland</option>
+          <option value="Friedensdorf, Fahrschule">Friedensdorf, Fahrschule</option>
+          <option value="Dautphe, Fuhrpark Netsch">Dautphe, Fuhrpark Netsch</option>
+          <option value="Dautphe, REWE">Dautphe, REWE</option>
+          <option value="Arbeitsort">Arbeitsort</option>
+          <option value="Zuhause">Zuhause</option>
+        </select>
+      </div>
+      <div class="modal-actions">
+        <button id="modal-cancel-btn" class="btn-mil btn-alert">Abbrechen</button>
+        <button id="modal-termin-btn" class="btn-mil hidden" style="border-color: var(--color-termin);">Termin</button>
+        <button id="modal-theorie-btn" class="btn-mil hidden" style="border-color: var(--color-theorie);">Theorieunterricht</button>
+        <button id="modal-pause-btn" class="btn-mil hidden" style="border-color: var(--color-pause);">Pause</button>
+        <button id="modal-reset-btn" class="btn-mil hidden" style="border-color: var(--text-dim);">-</button>
+        <button id="modal-free-btn" class="btn-mil hidden" style="border-color: var(--color-frei);">frei</button>
+        <button id="modal-save-btn" class="btn-mil">Speichern</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- EDIT TIME MODAL -->
+  <div id="time-modal" class="modal">
+    <div class="modal-content">
+      <h3>ZEITRAUM BEARBEITEN</h3>
+      <div class="form-group">
+        <label>ZEITRAUM (z.B. 11:00 - 12:30)</label>
+        <input type="text" id="time-range-input" placeholder="11:00 - 12:30">
+      </div>
+      <div style="display: flex; justify-content: space-between; margin-top: 15px;">
+        <button id="time-cancel-btn" class="btn-mil btn-alert">Abbrechen</button>
+        <button id="time-save-btn" class="btn-mil">Speichern</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FIREBASE INTEGRATION -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, set, push, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDFc2vxOZkfcbUGfVDVzTG-Waa0_ewaD-k",
+      authDomain: "fahrmitmanuel.firebaseapp.com",
+      databaseURL: "https://fahrmitmanuel-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "fahrmitmanuel",
+      storageBucket: "fahrmitmanuel.firebasestorage.app",
+      messagingSenderId: "508244709310",
+      appId: "1:508244709310:web:44c7f3128d6b574e1033ef"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // DSTT STANDARD-ZEITEINTEILUNG (Mo-Do, Sa = 14 Slots)
+    const DEFAULT_TIME_SLOTS_STANDARD = [
+      { id: "s1", time: "06:30 - 07:15", duration: 45 },
+      { id: "s2", time: "07:15 - 08:45", duration: 90 },
+      { id: "s3", time: "08:45 - 10:15", duration: 90 },
+      { id: "s4", time: "10:15 - 10:45", duration: 30 },
+      { id: "s5", time: "10:45 - 12:15", duration: 90 },
+      { id: "s6", time: "12:15 - 13:15", duration: 60 },
+      { id: "s7", time: "13:15 - 14:45", duration: 90 },
+      { id: "s8", time: "14:45 - 16:15", duration: 90 },
+      { id: "s9", time: "16:15 - 17:45", duration: 90 },
+      { id: "s10", time: "17:45 - 18:00", duration: 15 },
+      { id: "s11", time: "18:00 - 19:30", duration: 90 },
+      { id: "s12", time: "19:30 - 21:00", duration: 90 },
+      { id: "s13", time: "21:00 - 22:30", duration: 90 },
+      { id: "s14", time: "22:30 - 23:15", duration: 45 }
+    ];
+
+    // DSTT ZEITEINTEILUNG FREITAG (8 Slots)
+    const DEFAULT_TIME_SLOTS_FREITAG = [
+      { id: "s1", time: "06:15 - 07:00", duration: 45 },
+      { id: "s2", time: "07:00 - 08:30", duration: 90 },
+      { id: "s3", time: "08:30 - 10:00", duration: 90 },
+      { id: "s4", time: "10:00 - 10:30", duration: 30 },
+      { id: "s5", time: "10:30 - 11:00", duration: 30 },
+      { id: "s6", time: "11:00 - 12:30", duration: 90 },
+      { id: "s7", time: "12:30 - 14:00", duration: 90 },
+      { id: "s8", time: "14:00 - 15:30", duration: 90 }
+    ];
+
+    const DAYS = ["Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"];
+
+    let currentUser = localStorage.getItem('hq_current_user') || null;
+    let userRole = localStorage.getItem('hq_user_role') || null;
+    let dbUsers = {};
+    let weekData = {};
+    let customTimeSlots = {};
+
+    let editingSlotDay = null;
+    let editingSlotId = null;
+
+    function getSlotsForDay(day) {
+      if (customTimeSlots && customTimeSlots[`ZEITEN_${day}`]) {
+        return customTimeSlots[`ZEITEN_${day}`];
+      }
+      return day === "Freitag" ? DEFAULT_TIME_SLOTS_FREITAG : DEFAULT_TIME_SLOTS_STANDARD;
+    }
+
+    function flexCalculateDuration(timeStr) {
+      const parts = timeStr.split('-');
+      if (parts.length !== 2) return null;
+
+      const parseMinutes = (str) => {
+        const match = str.trim().match(/^(\d{1,2}):(\d{2})$/);
+        if (!match) return null;
+        return parseInt(match[1], 10) * 60 + parseInt(match[2], 10);
+      };
+
+      const start = parseMinutes(parts[0]);
+      const end = parseMinutes(parts[1]);
+
+      if (start === null || end === null) return null;
+
+      let diff = end - start;
+      if (diff <= 0) diff += 24 * 60;
+      return diff;
+    }
+
+    onValue(ref(db, "schueler/"), (snapshot) => {
+      dbUsers = snapshot.val() || {};
+      if (userRole === "admin") loadStudentList();
+    });
+
+    onValue(ref(db, "wochenplan/"), (snapshot) => {
+      weekData = snapshot.val() || {};
+      if (currentUser) renderSchedule();
+    });
+
+    onValue(ref(db, "wochenstruktur/"), (snapshot) => {
+      customTimeSlots = snapshot.val() || {};
+      if (currentUser) renderSchedule();
+    });
+
+    const scheduleContainer = document.getElementById('schedule-container');
+    document.getElementById('btn-mode-handy').addEventListener('click', (e) => {
+      scheduleContainer.className = "schedule-grid mode-handy";
+      setActiveModeBtn(e.target);
+    });
+    document.getElementById('btn-mode-tablet').addEventListener('click', (e) => {
+      scheduleContainer.className = "schedule-grid mode-tablet";
+      setActiveModeBtn(e.target);
+    });
+
+    function setActiveModeBtn(btn) {
+      document.querySelectorAll('.view-toggle button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+
+    if (currentUser && userRole) {
+      initApp();
+    }
+
+    document.getElementById('login-btn').addEventListener('click', () => {
+      const inputId = document.getElementById('login-id').value.trim();
+      const pin = document.getElementById('login-pin').value.trim();
+
+      if (pin === "0888") {
+        userRole = "admin";
+        currentUser = "Fahrlehrer (Admin)";
+        saveSession();
+        initApp();
+        return;
+      }
+
+      if (!inputId) {
+        alert("Bitte gib deinen Namen ein!");
+        return;
+      }
+
+      const userEntry = Object.entries(dbUsers).find(([id, s]) => s.name && s.name.toLowerCase() === inputId.toLowerCase());
+
+      if (!userEntry) {
+        alert("Du wurdest noch nicht vom Fahrlehrer im System angelegt!");
+        return;
+      }
+
+      const [firebaseKey, studentData] = userEntry;
+
+      if (!studentData.pin) {
+        document.getElementById('first-login-notice').classList.remove('hidden');
+        document.getElementById('login-btn').classList.add('hidden');
+        document.getElementById('pin-group').classList.add('hidden');
+        return;
+      }
+
+      if (studentData.pin === pin) {
+        userRole = "student";
+        currentUser = studentData.name;
+        saveSession();
+        initApp();
+      } else {
+        alert("Falsche PIN!");
+      }
+    });
+
+    document.getElementById('set-pin-btn').addEventListener('click', () => {
+      const inputId = document.getElementById('login-id').value.trim();
+      const newPin = document.getElementById('new-pin').value.trim();
+
+      if (newPin.length !== 4 || isNaN(newPin)) {
+        alert("Die PIN muss exakt aus 4 Zahlen bestehen!");
+        return;
+      }
+
+      const userEntry = Object.entries(dbUsers).find(([id, s]) => s.name && s.name.toLowerCase() === inputId.toLowerCase());
+
+      if (userEntry) {
+        const [firebaseKey, studentData] = userEntry;
+        update(ref(db, `schueler/${firebaseKey}`), { pin: newPin })
+          .then(() => {
+            userRole = "student";
+            currentUser = studentData.name;
+            saveSession();
+
+            document.getElementById('first-login-notice').classList.add('hidden');
+            document.getElementById('login-btn').classList.remove('hidden');
+            document.getElementById('pin-group').classList.remove('hidden');
+            alert("PIN erfolgreich gespeichert!");
+            initApp();
+          });
+      }
+    });
+
+    function saveSession() {
+      localStorage.setItem('hq_current_user', currentUser);
+      localStorage.setItem('hq_user_role', userRole);
+    }
+
+    function initApp() {
+      document.getElementById('auth-section').classList.add('hidden');
+      document.getElementById('app-screen').classList.remove('hidden');
+      document.getElementById('logout-btn').classList.remove('hidden');
+      document.getElementById('user-info').innerText = `${currentUser} [${userRole.toUpperCase()}]`;
+
+      if (userRole === "admin") {
+        document.getElementById('admin-panel').classList.remove('hidden');
+        loadStudentList();
+      }
+
+      renderSchedule();
+    }
+
+    document.getElementById('add-student-btn').addEventListener('click', () => {
+      const name = document.getElementById('new-student-name').value.trim();
+
+      if (!name) {
+        alert("Bitte den Namen des Fahrschülers eingeben!");
+        return;
+      }
+
+      const exists = Object.values(dbUsers).some(s => s.name && s.name.toLowerCase() === name.toLowerCase());
+
+      if (!exists) {
+        const newRef = push(ref(db, "schueler/"));
+        set(newRef, { name: name, pin: null, erstellt: new Date().toISOString() })
+          .then(() => {
+            alert(`Fahrschüler '${name}' in der Datenbank angelegt! Er kann sich jetzt anmelden.`);
+            document.getElementById('new-student-name').value = "";
+          });
+      } else {
+        alert("Dieser Fahrschüler existiert bereits!");
+      }
+    });
+
+    document.getElementById('reset-times-btn').addEventListener('click', () => {
+      if (confirm("Möchtest du alle Zeiten wirklich auf die DSTT-Standardeinteilung zurücksetzen?")) {
+        remove(ref(db, "wochenstruktur/"))
+          .then(() => {
+            alert("Zeiten wurden auf die DSTT-Standardwerte zurückgesetzt!");
+          });
+      }
+    });
+
+    function loadStudentList() {
+      const select = document.getElementById('modal-student-select');
+      select.innerHTML = "";
+      Object.values(dbUsers).forEach(student => {
+        if (student.name) {
+          const option = document.createElement('option');
+          option.value = student.name;
+          option.textContent = student.name;
+          select.appendChild(option);
+        }
+      });
+    }
+
+    function renderSchedule() {
+      scheduleContainer.innerHTML = "";
+
+      DAYS.forEach(day => {
+        const dayCol = document.createElement('div');
+        dayCol.className = 'day-column';
+
+        let freeMinutes = 0;
+        let bookedMinutes = 0;
+
+        let html = `<div class="day-header">${day}</div>`;
+        const daySlots = getSlotsForDay(day);
+
+        daySlots.forEach(slot => {
+          const slotKey = `${day}_${slot.id}`;
+          const slotState = weekData[slotKey] || { status: "-", type: "Übungsfahrt", location: "" };
+
+          if (slotState.status === "frei") freeMinutes += slot.duration;
+          if (slotState.status !== "-" && slotState.status !== "frei" && !slotState.status.includes("(wartet)") && slotState.status !== "Theorieunterricht" && slotState.status !== "Pause" && slotState.status !== "Termin") {
+            bookedMinutes += slot.duration;
+          }
+
+          let displayStatus = slotState.status;
+          let isOwnBooking = false;
+
+          if (userRole === "student") {
+            if (slotState.status !== "-" && slotState.status !== "frei" && slotState.status !== "Theorieunterricht" && slotState.status !== "Pause" && slotState.status !== "Termin") {
+              const cleanStatus = slotState.status.replace(" (wartet)", "").trim();
+              if (cleanStatus.toLowerCase() === currentUser.toLowerCase()) {
+                isOwnBooking = true;
+                displayStatus = slotState.status;
+              } else {
+                displayStatus = "belegt";
+              }
+            }
+          }
+
+          const isFrei = displayStatus === "frei";
+          const isPause = displayStatus === "Pause";
+          const isWartet = displayStatus && displayStatus.includes("(wartet)");
+          const isTheorie = displayStatus === "Theorieunterricht";
+          const isTermin = displayStatus === "Termin";
+          const isBelegt = displayStatus === "belegt";
+          const isEmpty = displayStatus === "-";
+          const isGebucht = !isFrei && !isPause && !isWartet && !isTheorie && !isTermin && !isBelegt && !isEmpty;
+          const editableClass = userRole === "admin" ? "editable" : "";
+
+          const rawType = slotState.type ? slotState.type.trim() : "Übungsfahrt";
+
+          html += `
+            <div class="slot-card">
+              <div class="slot-status ${isFrei ? 'frei' : ''} ${isGebucht ? 'gebucht' : ''} ${isPause ? 'pause' : ''} ${isWartet ? 'wartet' : ''} ${isTheorie ? 'theorie' : ''} ${isTermin ? 'termin' : ''} ${isBelegt ? 'belegt' : ''} ${isEmpty ? 'empty' : ''}" onclick="cycleStatus('${day}', '${slot.id}', '${slotState.status}')">
+                ${displayStatus}
+              </div>
+              <div class="slot-time ${editableClass}" onclick="event.stopPropagation(); openTimeEditModal('${day}', '${slot.id}', '${slot.time}', ${slot.duration})">
+                ${slot.time} Uhr (${slot.duration} Min.) ${userRole === "admin" ? "✏️" : ""}
+              </div>
+              ${(userRole === "admin" || isOwnBooking) && slotState.location ? `<div style="font-size:0.7rem; color:var(--highlight-yellow)">📍 ${slotState.location}</div>` : ''}
+              ${slotState.status !== "-" && slotState.status !== "Theorieunterricht" && slotState.status !== "Termin" && (userRole === "admin" || isOwnBooking) ? `
+                <div class="slot-type ${rawType === 'Fahrprüfung' ? 'slot-type-fahrprüfung' : ''}" onclick="cycleType('${day}', '${slot.id}')">
+                  ${rawType}
+                </div>
+              ` : ''}
+            </div>`;
+        });
+
+        if (userRole === "admin") {
+          html += `
+            <div class="stats-bar">
+              <div>Frei: <b style="color:var(--color-frei)">${freeMinutes}m</b></div>
+              <div>Gebucht: <b style="color:#6ba368">${bookedMinutes}m</b></div>
+            </div>`;
+        }
+
+        dayCol.innerHTML = html;
+        scheduleContainer.appendChild(dayCol);
+      });
+    }
+
+    window.openTimeEditModal = (day, slotId, timeStr, duration) => {
+      if (userRole !== "admin") return;
+      if (window.event) window.event.stopPropagation();
+      editingSlotDay = day;
+      editingSlotId = slotId;
+      document.getElementById('time-range-input').value = timeStr;
+      document.getElementById('time-modal').style.display = 'flex';
+    };
+
+    document.getElementById('time-save-btn').onclick = () => {
+      const newTimeRange = document.getElementById('time-range-input').value.trim();
+      const calculatedDuration = flexCalculateDuration(newTimeRange);
+
+      if (!newTimeRange || calculatedDuration === null) {
+        alert("Bitte die Zeit im Format HH:MM - HH:MM eingeben (z.B. 06:30 - 07:19 oder 6:30 - 7:19)");
+        return;
+      }
+
+      if (!editingSlotDay || !editingSlotId) {
+        alert("Fehler: Tag oder Slot-ID konnte nicht ermittelt werden.");
+        return;
+      }
+
+      let daySlots = JSON.parse(JSON.stringify(getSlotsForDay(editingSlotDay)));
+      const slotIdx = daySlots.findIndex(s => s.id === editingSlotId);
+
+      if (slotIdx !== -1) {
+        daySlots[slotIdx].time = newTimeRange;
+        daySlots[slotIdx].duration = calculatedDuration;
+
+        set(ref(db, `wochenstruktur/ZEITEN_${editingSlotDay}`), daySlots)
+          .then(() => {
+            document.getElementById('time-modal').style.display = 'none';
+          })
+          .catch((err) => {
+            alert("Fehler beim Speichern in Firebase: " + err.message);
+          });
+      } else {
+        alert("Slot nicht gefunden!");
+      }
+    };
+
+    document.getElementById('time-cancel-btn').onclick = () => {
+      document.getElementById('time-modal').style.display = 'none';
+    };
+
+    window.cycleStatus = (day, slotId, currentStatus) => {
+      const slotKey = `${day}_${slotId}`;
+
+      if (userRole === "admin") {
+        if (currentStatus === "-") {
+          updateSlot(slotKey, { status: "frei", location: "" });
+        } else if (currentStatus === "frei" || (currentStatus && currentStatus.includes("(wartet)"))) {
+          openBookingModal(day, slotId);
+        } else if (currentStatus === "Termin") {
+          updateSlot(slotKey, { status: "-", location: "" });
+        } else if (currentStatus === "Theorieunterricht") {
+          updateSlot(slotKey, { status: "Termin", location: "" });
+        } else {
+          updateSlot(slotKey, { status: "Theorieunterricht", location: "" });
+        }
+      } else {
+        if (currentStatus === "frei") {
+          openStudentRequestModal(day, slotId);
+        } else {
+          alert("Gebuchte oder angefragte Fahrstunden können nicht storniert werden. Bitte wende dich dafür an deinen Fahrlehrer.");
+        }
+      }
+    };
+
+    // Feste Durchschaltung per direkter If/Else-Logik (falls man doch im Planer klickt)
+    window.cycleType = (day, slotId) => {
+      if (userRole !== "admin") return;
+      const slotKey = `${day}_${slotId}`;
+      const slot = weekData[slotKey] || {};
+      
+      let currentType = slot.type ? slot.type.trim() : "Übungsfahrt";
+      
+      let nextType = "Übungsfahrt";
+      if (currentType === "Übungsfahrt") {
+        nextType = "Sonderfahrt";
+      } else if (currentType === "Sonderfahrt") {
+        nextType = "Prüfungsvorbereitung";
+      } else if (currentType === "Prüfungsvorbereitung") {
+        nextType = "Prüfungssimulation";
+      } else if (currentType === "Prüfungssimulation") {
+        nextType = "Fahrprüfung";
+      } else if (currentType === "Fahrprüfung") {
+        nextType = "Schaltwagen";
+      } else if (currentType === "Schaltwagen") {
+        nextType = "Termin";
+      } else {
+        nextType = "Übungsfahrt";
+      }
+      
+      updateSlot(slotKey, { type: nextType });
+    };
+
+    function updateSlot(slotKey, data) {
+      const updated = { ...(weekData[slotKey] || { type: "Übungsfahrt" }), ...data };
+      set(ref(db, `wochenplan/${slotKey}`), updated);
+    }
+
+    let currentTargetSlot = null;
+
+    function openBookingModal(day, slotId) {
+      currentTargetSlot = `${day}_${slotId}`;
+      document.getElementById('student-select-group').classList.remove('hidden');
+      document.getElementById('lesson-type-group').classList.remove('hidden'); // Fahrttyp-Auswahl anzeigen
+      document.getElementById('modal-termin-btn').classList.remove('hidden');
+      document.getElementById('modal-theorie-btn').classList.remove('hidden');
+      document.getElementById('modal-pause-btn').classList.remove('hidden');
+      document.getElementById('modal-reset-btn').classList.remove('hidden');
+      document.getElementById('modal-free-btn').classList.remove('hidden');
+
+      const slotState = weekData[currentTargetSlot] || {};
+      const studentSelect = document.getElementById('modal-student-select');
+      const lessonTypeSelect = document.getElementById('modal-lesson-type-select');
+      const locationSelect = document.getElementById('modal-location-select');
+
+      if (slotState.status && slotState.status.includes("(wartet)")) {
+        const studentName = slotState.status.replace(" (wartet)", "").trim();
+        studentSelect.value = studentName;
+      }
+
+      if (slotState.type) {
+        lessonTypeSelect.value = slotState.type.trim();
+      } else {
+        lessonTypeSelect.value = "Übungsfahrt";
+      }
+
+      if (slotState.location) {
+        locationSelect.value = slotState.location;
+      }
+
+      document.getElementById('booking-modal').style.display = 'flex';
+    }
+
+    function openStudentRequestModal(day, slotId) {
+      currentTargetSlot = `${day}_${slotId}`;
+      document.getElementById('student-select-group').classList.add('hidden');
+      document.getElementById('lesson-type-group').classList.add('hidden'); // Für Schüler im Anfrage-Modal ausblenden
+      document.getElementById('modal-termin-btn').classList.add('hidden');
+      document.getElementById('modal-theorie-btn').classList.add('hidden');
+      document.getElementById('modal-pause-btn').classList.add('hidden');
+      document.getElementById('modal-reset-btn').classList.add('hidden');
+      document.getElementById('modal-free-btn').classList.add('hidden');
+      document.getElementById('booking-modal').style.display = 'flex';
+    }
+
+    document.getElementById('modal-save-btn').onclick = () => {
+      const location = document.getElementById('modal-location-select').value;
+      const lessonType = document.getElementById('modal-lesson-type-select').value;
+
+      if (userRole === "admin") {
+        const studentName = document.getElementById('modal-student-select').value;
+        if (!studentName) {
+          alert("Bitte wählen Sie einen Fahrschüler aus!");
+          return;
+        }
+        updateSlot(currentTargetSlot, { status: studentName, location: location, type: lessonType });
+      } else {
+        updateSlot(currentTargetSlot, { status: `${currentUser} (wartet)`, location: location });
+      }
+
+      document.getElementById('booking-modal').style.display = 'none';
+    };
+
+    document.getElementById('modal-termin-btn').onclick = () => {
+      updateSlot(currentTargetSlot, { status: "Termin", location: "", type: "Termin" });
+      document.getElementById('booking-modal').style.display = 'none';
+    };
+
+    document.getElementById('modal-theorie-btn').onclick = () => {
+      updateSlot(currentTargetSlot, { status: "Theorieunterricht", location: "", type: "Übungsfahrt" });
+      document.getElementById('booking-modal').style.display = 'none';
+    };
+
+    document.getElementById('modal-pause-btn').onclick = () => {
+      updateSlot(currentTargetSlot, { status: "Pause", location: "", type: "Übungsfahrt" });
+      document.getElementById('booking-modal').style.display = 'none';
+    };
+
+    document.getElementById('modal-reset-btn').onclick = () => {
+      updateSlot(currentTargetSlot, { status: "-", location: "", type: "Übungsfahrt" });
+      document.getElementById('booking-modal').style.display = 'none';
+    };
+
+    document.getElementById('modal-free-btn').onclick = () => {
+      updateSlot(currentTargetSlot, { status: "frei", location: "", type: "Übungsfahrt" });
+      document.getElementById('booking-modal').style.display = 'none';
+    };
+
+    document.getElementById('modal-cancel-btn').onclick = () => {
+      document.getElementById('booking-modal').style.display = 'none';
+    };
+
+    document.getElementById('logout-btn').addEventListener('click', () => {
+      localStorage.removeItem('hq_current_user');
+      localStorage.removeItem('hq_user_role');
+      location.reload();
+    });
+  </script>
+</body>
+</html>
+
