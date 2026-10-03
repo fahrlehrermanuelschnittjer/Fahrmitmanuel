@@ -178,22 +178,25 @@
       display: flex;
       align-items: center;
       gap: 4px;
+      cursor: pointer;
     }
 
-    .slot-time-input {
-      background: #090c09;
-      border: 1px solid var(--panel-border);
-      color: var(--highlight-yellow);
+    .slot-time-clickable {
       font-family: 'Teko', sans-serif;
-      font-size: 1.1rem;
-      width: 52px;
+      font-size: 1.2rem;
+      color: var(--highlight-yellow);
+      letter-spacing: 1px;
+      background: #090c09;
+      border: 1px dashed var(--panel-border);
+      padding: 2px 6px;
       text-align: center;
-      padding: 2px;
+      width: 100%;
+      transition: all 0.2s;
     }
 
-    .slot-time-input:focus {
-      outline: none;
+    .slot-time-clickable:hover {
       border-color: var(--highlight-yellow);
+      background: rgba(207, 161, 68, 0.1);
     }
 
     .slot-time-static {
@@ -275,6 +278,76 @@
 
     .modal-actions {
       display: flex; gap: 6px; flex-wrap: wrap; justify-content: space-between; margin-top: 15px;
+    }
+
+    /* TIME PICKER CLOCK MODAL */
+    .time-picker-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-top: 10px;
+    }
+
+    .time-picker-column h4 {
+      font-size: 1rem;
+      color: var(--highlight-yellow);
+      margin-bottom: 8px;
+      text-align: center;
+      font-family: 'Teko', sans-serif;
+      letter-spacing: 1px;
+    }
+
+    .time-scroll-box {
+      background: #090c09;
+      border: 1px solid var(--panel-border);
+      height: 160px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: 5px;
+    }
+
+    .time-option-btn {
+      background: var(--panel-bg);
+      color: var(--text-main);
+      border: 1px solid var(--panel-border);
+      padding: 8px;
+      text-align: center;
+      cursor: pointer;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 1.1rem;
+    }
+
+    .time-option-btn:hover, .time-option-btn.selected {
+      background: var(--highlight-yellow);
+      color: #000;
+      font-weight: bold;
+      border-color: var(--highlight-yellow);
+    }
+
+    .quick-duration-chips {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+      margin-top: 15px;
+    }
+
+    .chip-btn {
+      flex: 1;
+      background: #090c09;
+      border: 1px solid var(--panel-border);
+      color: var(--text-main);
+      padding: 6px;
+      font-family: 'Share Tech Mono', monospace;
+      cursor: pointer;
+      font-size: 0.85rem;
+      text-align: center;
+    }
+
+    .chip-btn:hover {
+      border-color: var(--highlight-yellow);
+      color: var(--highlight-yellow);
     }
 
     .hidden { display: none !important; }
@@ -391,6 +464,42 @@
     </div>
   </div>
 
+  <!-- TIME CLOCK MODAL -->
+  <div id="time-clock-modal" class="modal">
+    <div class="modal-content" style="max-width: 480px;">
+      <h3>ZEITSPANNE EINSTELLEN</h3>
+      <p style="font-size: 0.8rem; color: var(--text-dim); margin-bottom: 10px;" id="time-clock-subtitle"></p>
+      
+      <div class="time-picker-grid">
+        <div class="time-picker-column">
+          <h4>STARTUHRZEIT</h4>
+          <div class="time-scroll-box" id="start-time-scroll"></div>
+        </div>
+        <div class="time-picker-column">
+          <h4>ENDUHRZEIT</h4>
+          <div class="time-scroll-box" id="end-time-scroll"></div>
+        </div>
+      </div>
+
+      <div style="margin-top: 15px;">
+        <label style="font-size: 0.8rem; color: var(--text-dim);">SCHNELL-DAUER WÄHLEN</label>
+        <div class="quick-duration-chips">
+          <button class="chip-btn" onclick="applyQuickDuration(15)">15 Min.</button>
+          <button class="chip-btn" onclick="applyQuickDuration(30)">30 Min.</button>
+          <button class="chip-btn" onclick="applyQuickDuration(45)">45 Min.</button>
+          <button class="chip-btn" onclick="applyQuickDuration(60)">60 Min.</button>
+          <button class="chip-btn" onclick="applyQuickDuration(90)">90 Min.</button>
+        </div>
+      </div>
+
+      <div class="modal-actions" style="margin-top: 20px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px;">
+        <button id="time-clock-cancel" class="btn-mil btn-alert" style="width: 100%;">Abbrechen</button>
+        <button id="time-clock-delete" class="btn-mil btn-alert" style="width: 100%; border-color: var(--alert-red);">Uhrzeit löschen</button>
+        <button id="time-clock-save" class="btn-mil" style="width: 100%;">Zeit übernehmen</button>
+      </div>
+    </div>
+  </div>
+
   <!-- FIREBASE INTEGRATION -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -410,32 +519,98 @@
     const db = getDatabase(app);
 
     const DEFAULT_TIME_SLOTS_STANDARD = [
-      { id: "s1", time: "06:30 - 07:15", duration: 45 },
-      { id: "s2", time: "07:15 - 08:45", duration: 90 },
-      { id: "s3", time: "08:45 - 10:15", duration: 90 },
-      { id: "s4", time: "10:15 - 10:45", duration: 30 },
-      { id: "s5", time: "10:45 - 12:15", duration: 90 },
-      { id: "s6", time: "12:15 - 13:15", duration: 60 },
-      { id: "s7", time: "13:15 - 14:45", duration: 90 },
-      { id: "s8", time: "14:45 - 16:15", duration: 90 },
-      { id: "s9", time: "16:15 - 17:45", duration: 90 },
-      { id: "s10", time: "17:45 - 18:00", duration: 15 },
-      { id: "s11", time: "18:00 - 19:30", duration: 90 },
-      { id: "s12", time: "19:30 - 21:00", duration: 90 },
-      { id: "s13", time: "21:00 - 22:30", duration: 90 },
-      { id: "s14", time: "22:30 - 23:15", duration: 45 }
+      { id: "s1", time: "06:00 - 07:30", duration: 90 },
+      { id: "s2", time: "07:30 - 09:00", duration: 90 },
+      { id: "s3", time: "09:15 - 10:45", duration: 90 },
+      { id: "s4", time: "10:45 - 12:15", duration: 90 },
+      { id: "s5", time: "12:15 - 13:15", duration: 60 },
+      { id: "s6", time: "13:15 - 14:45", duration: 90 },
+      { id: "s7", time: "14:45 - 16:15", duration: 90 },
+      { id: "s8", time: "16:15 - 17:45", duration: 90 },
+      { id: "s9", time: "17:45 - 18:00", duration: 15 },
+      { id: "s10", time: "18:00 - 19:30", duration: 90 },
+      { id: "s11", time: "19:30 - 21:00", duration: 90 },
+      { id: "s12", time: "21:00 - 22:30", duration: 90 },
+      { id: "s13", time: "22:30 - 23:15", duration: 45 }
     ];
 
-    const DEFAULT_TIME_SLOTS_FREITAG = [
-      { id: "s1", time: "06:15 - 07:00", duration: 45 },
-      { id: "s2", time: "07:00 - 08:30", duration: 90 },
-      { id: "s3", time: "08:30 - 10:00", duration: 90 },
-      { id: "s4", time: "10:00 - 10:30", duration: 30 },
-      { id: "s5", time: "10:30 - 11:00", duration: 30 },
-      { id: "s6", time: "11:00 - 12:30", duration: 90 },
-      { id: "s7", time: "12:30 - 14:00", duration: 90 },
-      { id: "s8", time: "14:00 - 15:30", duration: 90 }
-    ];
+    // Standard-Zustände aus deinen Vorlagen (DSTT Standard)
+    const DEFAULT_WEEK_SCHEDULE = {
+      // Montag
+      "Montag_s1": { status: "-", type: "Übungsfahrt", location: "" },
+      "Montag_s2": { status: "-", type: "Übungsfahrt", location: "" },
+      "Montag_s3": { status: "frei", type: "Übungsfahrt", location: "" },
+      "Montag_s4": { status: "frei", type: "Übungsfahrt", location: "" },
+      "Montag_s5": { status: "Pause", type: "Übungsfahrt", location: "" },
+      "Montag_s6": { status: "frei", type: "Übungsfahrt", location: "" },
+      "Montag_s7": { status: "frei", type: "Übungsfahrt", location: "" },
+      "Montag_s8": { status: "frei", type: "Übungsfahrt", location: "" },
+      "Montag_s9": { status: "Pause", type: "Übungsfahrt", location: "" },
+      "Montag_s10": { status: "Theorieunterricht", type: "Übungsfahrt", location: "" },
+      "Montag_s11": { status: "frei", type: "Übungsfahrt", location: "" },
+      "Montag_s12": { status: "frei", type: "Übungsfahrt", location: "" },
+      "Montag_s13": { status: "frei", type: "Übungsfahrt", location: "" },
+
+      // Dienstag
+      "Dienstag_s1": { status: "-", type: "Übungsfahrt", location: "" },
+      "Dienstag_s2": { status: "frei", type: "Übungsfahrt", location: "" },
+      "Dienstag_s3": { status: "frei", type: "Übungsfahrt", location: "" },
+      "Dienstag_s4": { status: "frei", type: "Übungsfahrt", location: "" },
+      "Dienstag_s5": { status: "Pause", type: "Übungsfahrt", location: "" },
+      "Dienstag_s6": { status: "frei", type: "Übungsfahrt", location: "" },
+      "Dienstag_s7": { status: "frei", type: "Übungsfahrt", location: "" },
+      "Dienstag_s8": { status: "frei", type: "Übungsfahrt", location: "" },
+      "Dienstag_s9": { status: "Pause", type: "Übungsfahrt", location: "" },
+      "Dienstag_s10": { status: "frei", type: "Übungsfahrt", location: "" },
+      "Dienstag_s11": { status: "frei", type: "Übungsfahrt", location: "" },
+      "Dienstag_s12": { status: "frei", type: "Übungsfahrt", location: "" },
+      "Dienstag_s13": { status: "frei", type: "Übungsfahrt", location: "" },
+
+      // Mittwoch
+      "Mittwoch_s1": { status: "-", type: "Übungsfahrt", location: "" },
+      "Mittwoch_s2": { status: "frei", type: "Übungsfahrt", location: "" },
+      "Mittwoch_s3": { status: "frei", type: "Übungsfahrt", location: "" },
+      "Mittwoch_s4": { status: "frei", type: "Sonderfahrt", location: "" },
+      "Mittwoch_s5": { status: "Pause", type: "Übungsfahrt", location: "" },
+      "Mittwoch_s6": { status: "frei", type: "Übungsfahrt", location: "" },
+      "Mittwoch_s7": { status: "frei", type: "Übungsfahrt", location: "" },
+      "Mittwoch_s8": { status: "frei", type: "Übungsfahrt", location: "" },
+      "Mittwoch_s9": { status: "Pause", type: "Übungsfahrt", location: "" },
+      "Mittwoch_s10": { status: "Theorieunterricht", type: "Übungsfahrt", location: "" },
+      "Mittwoch_s11": { status: "frei", type: "Übungsfahrt", location: "" },
+      "Mittwoch_s12": { status: "frei", type: "Schaltwagen", location: "" },
+      "Mittwoch_s13": { status: "frei", type: "Übungsfahrt", location: "" },
+
+      // Donnerstag
+      "Donnerstag_s1": { status: "frei", type: "Übungsfahrt", location: "" },
+      "Donnerstag_s2": { status: "frei", type: "Übungsfahrt", location: "" },
+      "Donnerstag_s3": { status: "frei", type: "Übungsfahrt", location: "" },
+      "Donnerstag_s4": { status: "Pause", type: "Übungsfahrt", location: "" },
+      "Donnerstag_s5": { status: "frei", type: "Übungsfahrt", location: "" },
+      "Donnerstag_s6": { status: "Pause", type: "Übungsfahrt", location: "" },
+      "Donnerstag_s7": { status: "frei", type: "Übungsfahrt", location: "" },
+      "Donnerstag_s8": { status: "frei", type: "Übungsfahrt", location: "" },
+      "Donnerstag_s9": { status: "Pause", type: "Übungsfahrt", location: "" },
+      "Donnerstag_s10": { status: "frei", type: "Übungsfahrt", location: "" },
+      "Donnerstag_s11": { status: "frei", type: "Übungsfahrt", location: "" },
+      "Donnerstag_s12": { status: "frei", type: "Übungsfahrt", location: "" },
+      "Donnerstag_s13": { status: "frei", type: "Übungsfahrt", location: "" },
+
+      // Freitag
+      "Freitag_s1": { status: "frei", type: "Übungsfahrt", location: "" },
+      "Freitag_s2": { status: "frei", type: "Übungsfahrt", location: "" },
+      "Freitag_s3": { status: "frei", type: "Übungsfahrt", location: "" },
+      "Freitag_s4": { status: "frei", type: "Übungsfahrt", location: "" },
+      "Freitag_s5": { status: "Pause", type: "Übungsfahrt", location: "" },
+      "Freitag_s6": { status: "frei", type: "Übungsfahrt", location: "" },
+      "Freitag_s7": { status: "-", type: "Übungsfahrt", location: "" },
+      "Freitag_s8": { status: "-", type: "Übungsfahrt", location: "" },
+      "Freitag_s9": { status: "-", type: "Übungsfahrt", location: "" },
+      "Freitag_s10": { status: "-", type: "Übungsfahrt", location: "" },
+      "Freitag_s11": { status: "-", type: "Übungsfahrt", location: "" },
+      "Freitag_s12": { status: "-", type: "Übungsfahrt", location: "" },
+      "Freitag_s13": { status: "-", type: "Übungsfahrt", location: "" }
+    };
 
     const DAYS = ["Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"];
     let activeDay = "Montag";
@@ -450,7 +625,7 @@
       if (customTimeSlots && customTimeSlots[`ZEITEN_${day}`]) {
         return customTimeSlots[`ZEITEN_${day}`];
       }
-      return day === "Freitag" ? DEFAULT_TIME_SLOTS_FREITAG : DEFAULT_TIME_SLOTS_STANDARD;
+      return DEFAULT_TIME_SLOTS_STANDARD;
     }
 
     function flexCalculateDuration(timeStr) {
@@ -480,6 +655,9 @@
 
     onValue(ref(db, "wochenplan/"), (snapshot) => {
       weekData = snapshot.val() || {};
+      if (!weekData || Object.keys(weekData).length === 0) {
+        weekData = DEFAULT_WEEK_SCHEDULE;
+      }
       if (currentUser) renderSchedule();
     });
 
@@ -605,10 +783,16 @@
     });
 
     document.getElementById('reset-times-btn').addEventListener('click', () => {
-      if (confirm("Möchtest du alle Zeiten wirklich auf die DSTT-Standardeinteilung zurücksetzen?")) {
-        remove(ref(db, "wochenstruktur/"))
+      if (confirm("Möchtest du alle Zeiten und Eintragungen wirklich auf die DSTT-Standardeinteilung zurücksetzen?")) {
+        Promise.all([
+          remove(ref(db, "wochenstruktur/")),
+          set(ref(db, "wochenplan/"), DEFAULT_WEEK_SCHEDULE)
+        ])
           .then(() => {
-            alert("Zeiten wurden auf die DSTT-Standardwerte zurückgesetzt!");
+            alert("Zeiten und Eintragungen wurden erfolgreich auf die DSTT-Standardwerte zurückgesetzt!");
+          })
+          .catch((err) => {
+            alert("Fehler beim Zurücksetzen: " + err.message);
           });
       }
     });
@@ -695,15 +879,12 @@
         const isGebucht = !isFrei && !isPause && !isWartet && !isTheorie && !isTermin && !isBelegt && !isEmpty;
 
         const rawType = slotState.type ? slotState.type.trim() : "Übungsfahrt";
-        const [startTime, endTime] = slot.time.split('-').map(s => s ? s.trim() : "");
 
         html += `
           <div class="slot-card">
             <div class="slot-left">
               ${userRole === "admin" ? `
-                <input type="text" class="slot-time-input" id="start_${activeDay}_${slot.id}" value="${startTime || ''}" onchange="saveTimeChange('${activeDay}', '${slot.id}')">
-                <span>-</span>
-                <input type="text" class="slot-time-input" id="end_${activeDay}_${slot.id}" value="${endTime || ''}" onchange="saveTimeChange('${activeDay}', '${slot.id}')">
+                <div class="slot-time-clickable" onclick="openTimeClockModal('${activeDay}', '${slot.id}', '${slot.time}')">${slot.time}</div>
               ` : `
                 <div class="slot-time-static">${slot.time}</div>
               `}
@@ -733,30 +914,138 @@
       scheduleContainer.appendChild(dayCol);
     }
 
-    window.saveTimeChange = (day, slotId) => {
+    let activeTimeDay = null;
+    let activeTimeSlotId = null;
+    let selectedStartTime = "08:00";
+    let selectedEndTime = "09:30";
+
+    const TIME_OPTIONS = [];
+    for (let h = 5; h <= 23; h++) {
+      for (let m = 0; m < 60; m += 15) {
+        const hh = String(h).padStart(2, '0');
+        const mm = String(m).padStart(2, '0');
+        TIME_OPTIONS.push(`${hh}:${mm}`);
+      }
+    }
+
+    window.openTimeClockModal = (day, slotId, currentTimeRange) => {
       if (userRole !== "admin") return;
-      const startVal = document.getElementById(`start_${day}_${slotId}`).value.trim();
-      const endVal = document.getElementById(`end_${day}_${slotId}`).value.trim();
-      const newTimeRange = `${startVal} - ${endVal}`;
+      activeTimeDay = day;
+      activeTimeSlotId = slotId;
+
+      const parts = currentTimeRange.split('-').map(s => s.trim());
+      selectedStartTime = parts[0] || "08:00";
+      selectedEndTime = parts[1] || "09:30";
+
+      document.getElementById('time-clock-subtitle').innerText = `${day} // Slot ${slotId.toUpperCase()}`;
+      buildTimeSelectors();
+      document.getElementById('time-clock-modal').style.display = 'flex';
+    };
+
+    function buildTimeSelectors() {
+      const startBox = document.getElementById('start-time-scroll');
+      const endBox = document.getElementById('end-time-scroll');
+      startBox.innerHTML = "";
+      endBox.innerHTML = "";
+
+      TIME_OPTIONS.forEach(time => {
+        const btnStart = document.createElement('button');
+        btnStart.className = `time-option-btn ${time === selectedStartTime ? 'selected' : ''}`;
+        btnStart.innerText = time;
+        btnStart.onclick = () => {
+          selectedStartTime = time;
+          highlightSelectedTimes();
+        };
+        startBox.appendChild(btnStart);
+
+        const btnEnd = document.createElement('button');
+        btnEnd.className = `time-option-btn ${time === selectedEndTime ? 'selected' : ''}`;
+        btnEnd.innerText = time;
+        btnEnd.onclick = () => {
+          selectedEndTime = time;
+          highlightSelectedTimes();
+        };
+        endBox.appendChild(btnEnd);
+      });
+    }
+
+    function highlightSelectedTimes() {
+      document.querySelectorAll('#start-time-scroll .time-option-btn').forEach(btn => {
+        if (btn.innerText === selectedStartTime) btn.classList.add('selected');
+        else btn.classList.remove('selected');
+      });
+      document.querySelectorAll('#end-time-scroll .time-option-btn').forEach(btn => {
+        if (btn.innerText === selectedEndTime) btn.classList.add('selected');
+        else btn.classList.remove('selected');
+      });
+    }
+
+    window.applyQuickDuration = (durationMinutes) => {
+      const [sh, sm] = selectedStartTime.split(':').map(Number);
+      const startTotalMins = sh * 60 + sm;
+      const endTotalMins = startTotalMins + durationMinutes;
+
+      const eh = Math.floor(endTotalMins / 60) % 24;
+      const em = endTotalMins % 60;
+
+      selectedEndTime = `${String(eh).padStart(2, '0')}:${String(em).padStart(2, '0')}`;
+      highlightSelectedTimes();
+    };
+
+    document.getElementById('time-clock-save').onclick = () => {
+      const newTimeRange = `${selectedStartTime} - ${selectedEndTime}`;
       const calculatedDuration = flexCalculateDuration(newTimeRange);
 
-      if (!startVal || !endVal || calculatedDuration === null) {
-        alert("Bitte gültige Zeiten im Format HH:MM eingeben!");
+      if (calculatedDuration === null || calculatedDuration <= 0) {
+        alert("Bitte eine gültige Zeitspanne auswählen!");
         return;
       }
 
-      let daySlots = JSON.parse(JSON.stringify(getSlotsForDay(day)));
-      const slotIdx = daySlots.findIndex(s => s.id === slotId);
+      let daySlots = JSON.parse(JSON.stringify(getSlotsForDay(activeTimeDay)));
+      const slotIdx = daySlots.findIndex(s => s.id === activeTimeSlotId);
 
       if (slotIdx !== -1) {
         daySlots[slotIdx].time = newTimeRange;
         daySlots[slotIdx].duration = calculatedDuration;
 
-        set(ref(db, `wochenstruktur/ZEITEN_${day}`), daySlots)
+        set(ref(db, `wochenstruktur/ZEITEN_${activeTimeDay}`), daySlots)
+          .then(() => {
+            document.getElementById('time-clock-modal').style.display = 'none';
+          })
           .catch((err) => {
             alert("Fehler beim Speichern in Firebase: " + err.message);
           });
       }
+    };
+
+    document.getElementById('time-clock-delete').onclick = () => {
+      if (confirm("Möchtest du die benutzerdefinierte Zeit dieses Slots wirklich löschen/auf Standard zurücksetzen?")) {
+        let daySlots = JSON.parse(JSON.stringify(getSlotsForDay(activeTimeDay)));
+        const slotIdx = daySlots.findIndex(s => s.id === activeTimeSlotId);
+
+        if (slotIdx !== -1) {
+          daySlots.splice(slotIdx, 1);
+          
+          let updateObj = {};
+          if (daySlots.length === 0) {
+            updateObj[`ZEITEN_${activeTimeDay}`] = null;
+          } else {
+            updateObj[`ZEITEN_${activeTimeDay}`] = daySlots;
+          }
+
+          update(ref(db, `wochenstruktur/`), updateObj)
+            .then(() => {
+              document.getElementById('time-clock-modal').style.display = 'none';
+            })
+            .catch((err) => {
+              alert("Fehler beim Löschen in Firebase: " + err.message);
+            });
+        }
+      }
+    };
+
+    document.getElementById('time-clock-cancel').onclick = () => {
+      document.getElementById('time-clock-modal').style.display = 'none';
     };
 
     window.cycleStatus = (day, slotId, currentStatus) => {
