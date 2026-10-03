@@ -886,7 +886,7 @@
             </div>
             
             <div class="slot-center">
-              <div class="slot-status ${isFrei ? 'frei' : ''} ${isGebucht ? 'gebucht' : ''} ${isPause ? 'pause' : ''} ${isWartet ? 'wartet' : ''} ${isTheorie ? 'theorie' : ''} ${isTermin ? 'termin' : ''} ${isBelegt ? 'belegt' : ''} ${isEmpty ? 'empty' : ''}" onclick="cycleStatus('${activeDay}', '${slot.id}', '${slotState.status}')">
+              <div class="slot-status ${isFrei ? 'frei' : ''} ${isGebucht ? 'gebucht' : ''} ${isPause ? 'pause' : ''} ${isWartet ? 'wartet' : ''} ${isTheorie ? 'theorie' : ''} ${isTermin ? 'termin' : ''} ${isBelegt ? 'belegt' : ''} ${isEmpty ? 'empty' : ''}" onclick="handleStatusClick('${activeDay}', '${slot.id}', '${slotState.status}')">
                 ${displayStatus}
               </div>
               ${(userRole === "admin" || isOwnBooking) && slotState.location ? `<div style="font-size:0.75rem; color:var(--highlight-yellow); text-align:center; margin-top:2px;">📍 ${slotState.location}</div>` : ''}
@@ -1043,21 +1043,9 @@
       document.getElementById('time-clock-modal').style.display = 'none';
     };
 
-    window.cycleStatus = (day, slotId, currentStatus) => {
-      const slotKey = `${day}_${slotId}`;
-
+    window.handleStatusClick = (day, slotId, currentStatus) => {
       if (userRole === "admin") {
-        if (currentStatus === "-") {
-          updateSlot(slotKey, { status: "frei", location: "" });
-        } else if (currentStatus === "frei" || (currentStatus && currentStatus.includes("(wartet)"))) {
-          openBookingModal(day, slotId);
-        } else if (currentStatus === "Termin") {
-          updateSlot(slotKey, { status: "-", location: "" });
-        } else if (currentStatus === "Theorieunterricht") {
-          updateSlot(slotKey, { status: "Termin", location: "" });
-        } else {
-          updateSlot(slotKey, { status: "Theorieunterricht", location: "" });
-        }
+        openBookingModal(day, slotId);
       } else {
         if (currentStatus === "frei") {
           openStudentRequestModal(day, slotId);
