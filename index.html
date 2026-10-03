@@ -487,6 +487,7 @@
           <button class="chip-btn" onclick="applyQuickDuration(15)">15 Min.</button>
           <button class="chip-btn" onclick="applyQuickDuration(30)">30 Min.</button>
           <button class="chip-btn" onclick="applyQuickDuration(45)">45 Min.</button>
+          <button class="chip-btn" onclick="applyQuickDuration(55)">55 Min.</button>
           <button class="chip-btn" onclick="applyQuickDuration(60)">60 Min.</button>
           <button class="chip-btn" onclick="applyQuickDuration(90)">90 Min.</button>
         </div>
@@ -534,9 +535,7 @@
       { id: "s13", time: "22:30 - 23:15", duration: 45 }
     ];
 
-    // Standard-Zustände aus deinen Vorlagen (DSTT Standard)
     const DEFAULT_WEEK_SCHEDULE = {
-      // Montag
       "Montag_s1": { status: "-", type: "Übungsfahrt", location: "" },
       "Montag_s2": { status: "-", type: "Übungsfahrt", location: "" },
       "Montag_s3": { status: "frei", type: "Übungsfahrt", location: "" },
@@ -551,7 +550,6 @@
       "Montag_s12": { status: "frei", type: "Übungsfahrt", location: "" },
       "Montag_s13": { status: "frei", type: "Übungsfahrt", location: "" },
 
-      // Dienstag
       "Dienstag_s1": { status: "-", type: "Übungsfahrt", location: "" },
       "Dienstag_s2": { status: "frei", type: "Übungsfahrt", location: "" },
       "Dienstag_s3": { status: "frei", type: "Übungsfahrt", location: "" },
@@ -566,7 +564,6 @@
       "Dienstag_s12": { status: "frei", type: "Übungsfahrt", location: "" },
       "Dienstag_s13": { status: "frei", type: "Übungsfahrt", location: "" },
 
-      // Mittwoch
       "Mittwoch_s1": { status: "-", type: "Übungsfahrt", location: "" },
       "Mittwoch_s2": { status: "frei", type: "Übungsfahrt", location: "" },
       "Mittwoch_s3": { status: "frei", type: "Übungsfahrt", location: "" },
@@ -581,7 +578,6 @@
       "Mittwoch_s12": { status: "frei", type: "Schaltwagen", location: "" },
       "Mittwoch_s13": { status: "frei", type: "Übungsfahrt", location: "" },
 
-      // Donnerstag
       "Donnerstag_s1": { status: "frei", type: "Übungsfahrt", location: "" },
       "Donnerstag_s2": { status: "frei", type: "Übungsfahrt", location: "" },
       "Donnerstag_s3": { status: "frei", type: "Übungsfahrt", location: "" },
@@ -596,7 +592,6 @@
       "Donnerstag_s12": { status: "frei", type: "Übungsfahrt", location: "" },
       "Donnerstag_s13": { status: "frei", type: "Übungsfahrt", location: "" },
 
-      // Freitag
       "Freitag_s1": { status: "frei", type: "Übungsfahrt", location: "" },
       "Freitag_s2": { status: "frei", type: "Übungsfahrt", location: "" },
       "Freitag_s3": { status: "frei", type: "Übungsfahrt", location: "" },
@@ -921,7 +916,7 @@
 
     const TIME_OPTIONS = [];
     for (let h = 5; h <= 23; h++) {
-      for (let m = 0; m < 60; m += 15) {
+      for (let m = 0; m < 60; m += 5) {
         const hh = String(h).padStart(2, '0');
         const mm = String(m).padStart(2, '0');
         TIME_OPTIONS.push(`${hh}:${mm}`);
