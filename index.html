@@ -59,10 +59,6 @@
       border: 1px solid var(--highlight-yellow);
     }
 
-    .view-toggle {
-      display: flex; gap: 5px; margin-bottom: 15px;
-    }
-
     .btn-mil {
       background: var(--panel-bg);
       color: var(--text-main);
@@ -105,43 +101,130 @@
       font-family: 'Share Tech Mono', monospace;
     }
 
-    /* SCHEDULE LAYOUT MODES */
-    .schedule-grid { display: grid; gap: 10px; }
-    .mode-handy { grid-template-columns: 1fr; }
-    .mode-tablet { grid-template-columns: repeat(3, 1fr); }
-    @media (min-width: 1200px) { .mode-tablet { grid-template-columns: repeat(6, 1fr); } }
+    /* DAY TABS NAVIGATION */
+    .day-tabs {
+      display: flex;
+      gap: 5px;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+    }
 
+    .day-tab-btn {
+      flex: 1;
+      min-width: 100px;
+      background: var(--panel-bg);
+      color: var(--text-main);
+      border: 1px solid var(--panel-border);
+      padding: 10px;
+      cursor: pointer;
+      font-family: 'Teko', sans-serif;
+      font-size: 1.2rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      text-align: center;
+      transition: all 0.2s;
+    }
+
+    .day-tab-btn:hover {
+      border-color: var(--highlight-yellow);
+      color: var(--highlight-yellow);
+    }
+
+    .day-tab-btn.active {
+      background: var(--accent-green);
+      color: #000;
+      border-color: var(--highlight-yellow);
+      font-weight: bold;
+    }
+
+    /* SCHEDULE LAYOUT */
     .day-column {
       background: var(--panel-bg);
       border: 1px solid var(--panel-border);
-      padding: 10px;
+      padding: 15px;
     }
 
     .day-header {
       background: var(--panel-border);
-      padding: 6px; text-align: center; font-weight: bold; margin-bottom: 10px;
-      color: var(--highlight-yellow); font-size: 1.1rem;
-      font-family: 'Teko', sans-serif; text-transform: uppercase; letter-spacing: 1px;
+      padding: 8px 12px;
+      margin-bottom: 15px;
+      color: var(--highlight-yellow);
+      font-size: 1.3rem;
+      font-family: 'Teko', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .slots-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
     }
 
     .slot-card {
       background: var(--slot-bg);
       border: 1px solid var(--panel-border);
-      padding: 8px; margin-bottom: 8px; font-size: 0.85rem;
+      padding: 10px;
+      display: grid;
+      grid-template-columns: 140px 1fr 120px;
+      align-items: center;
+      gap: 10px;
     }
 
-    .slot-time {
-      font-family: 'Teko', sans-serif; font-size: 1.1rem; color: var(--highlight-yellow);
-      margin-top: 4px; margin-bottom: 4px; text-align: center; letter-spacing: 1px;
+    .slot-left {
+      display: flex;
+      align-items: center;
+      gap: 4px;
     }
 
-    .slot-time.editable { cursor: pointer; text-decoration: underline; }
+    .slot-time-input {
+      background: #090c09;
+      border: 1px solid var(--panel-border);
+      color: var(--highlight-yellow);
+      font-family: 'Teko', sans-serif;
+      font-size: 1.1rem;
+      width: 52px;
+      text-align: center;
+      padding: 2px;
+    }
+
+    .slot-time-input:focus {
+      outline: none;
+      border-color: var(--highlight-yellow);
+    }
+
+    .slot-time-static {
+      font-family: 'Teko', sans-serif;
+      font-size: 1.2rem;
+      color: var(--highlight-yellow);
+      letter-spacing: 1px;
+    }
+
+    .slot-center {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
 
     .slot-status {
-      font-weight: bold; cursor: pointer; padding: 5px;
+      font-weight: bold; 
+      cursor: pointer; 
+      padding: 6px 15px;
       background: var(--color-empty);
       color: #ffffff;
-      border: 1px dashed var(--color-empty); text-align: center; margin-bottom: 4px; user-select: none;
+      border: 1px dashed var(--color-empty); 
+      user-select: none;
+      font-size: 0.95rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      width: 100%;
+      max-width: 80%;
     }
 
     .slot-status.frei { background: var(--color-frei); color: #000000; border: 1px solid var(--color-frei); }
@@ -155,7 +238,7 @@
 
     .slot-type {
       font-size: 0.75rem; color: var(--text-dim); cursor: pointer;
-      text-decoration: underline; user-select: none; margin-top: 4px;
+      text-decoration: underline; user-select: none; margin-top: 2px; text-align: right;
     }
 
     .slot-type-fahrprüfung {
@@ -163,16 +246,20 @@
       font-weight: bold;
     }
 
+    .slot-right {
+      text-align: right;
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      justify-content: center;
+    }
+
     .admin-panel {
       background: var(--panel-bg);
       border: 2px solid var(--highlight-yellow);
       padding: 15px; margin-bottom: 20px;
-    }
-
-    .stats-bar {
-      background: #070907; border-top: 1px solid var(--panel-border);
-      padding: 6px; margin-top: 10px; font-size: 0.75rem;
-      display: flex; justify-content: space-between;
     }
 
     /* MODAL */
@@ -238,11 +325,6 @@
   <!-- MAIN APP SECTION -->
   <div id="app-screen" class="hidden">
 
-    <div class="view-toggle">
-      <button id="btn-mode-handy" class="btn-mil">Modus: Handy</button>
-      <button id="btn-mode-tablet" class="btn-mil active">Modus: Tablet</button>
-    </div>
-
     <!-- ADMIN PANEL -->
     <div id="admin-panel" class="admin-panel hidden">
       <h3>COMMANDER PANEL (FAHRLEHRER)</h3>
@@ -253,8 +335,11 @@
       </div>
     </div>
 
-    <!-- WOCHENPLAN -->
-    <div class="schedule-grid mode-tablet" id="schedule-container"></div>
+    <!-- WOCHENTAG-REGISTERKARTEN (TABS) -->
+    <div class="day-tabs" id="day-tabs-container"></div>
+
+    <!-- STUNDENPLAN CONTAINER FÜR DEN AKTIVEN TAG -->
+    <div id="schedule-container"></div>
   </div>
 
   <!-- BOOKING / ASSIGNMENT MODAL -->
@@ -266,7 +351,6 @@
         <select id="modal-student-select"></select>
       </div>
       
-      <!-- NEU: Fahrttyp-Auswahl direkt im Modal -->
       <div class="form-group" id="lesson-type-group">
         <label>FAHRTSTUNDEN-TYP WÄHLEN</label>
         <select id="modal-lesson-type-select">
@@ -307,21 +391,6 @@
     </div>
   </div>
 
-  <!-- EDIT TIME MODAL -->
-  <div id="time-modal" class="modal">
-    <div class="modal-content">
-      <h3>ZEITRAUM BEARBEITEN</h3>
-      <div class="form-group">
-        <label>ZEITRAUM (z.B. 11:00 - 12:30)</label>
-        <input type="text" id="time-range-input" placeholder="11:00 - 12:30">
-      </div>
-      <div style="display: flex; justify-content: space-between; margin-top: 15px;">
-        <button id="time-cancel-btn" class="btn-mil btn-alert">Abbrechen</button>
-        <button id="time-save-btn" class="btn-mil">Speichern</button>
-      </div>
-    </div>
-  </div>
-
   <!-- FIREBASE INTEGRATION -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -340,7 +409,6 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // DSTT STANDARD-ZEITEINTEILUNG (Mo-Do, Sa = 14 Slots)
     const DEFAULT_TIME_SLOTS_STANDARD = [
       { id: "s1", time: "06:30 - 07:15", duration: 45 },
       { id: "s2", time: "07:15 - 08:45", duration: 90 },
@@ -358,7 +426,6 @@
       { id: "s14", time: "22:30 - 23:15", duration: 45 }
     ];
 
-    // DSTT ZEITEINTEILUNG FREITAG (8 Slots)
     const DEFAULT_TIME_SLOTS_FREITAG = [
       { id: "s1", time: "06:15 - 07:00", duration: 45 },
       { id: "s2", time: "07:00 - 08:30", duration: 90 },
@@ -371,15 +438,13 @@
     ];
 
     const DAYS = ["Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"];
+    let activeDay = "Montag";
 
     let currentUser = localStorage.getItem('hq_current_user') || null;
     let userRole = localStorage.getItem('hq_user_role') || null;
     let dbUsers = {};
     let weekData = {};
     let customTimeSlots = {};
-
-    let editingSlotDay = null;
-    let editingSlotId = null;
 
     function getSlotsForDay(day) {
       if (customTimeSlots && customTimeSlots[`ZEITEN_${day}`]) {
@@ -422,21 +487,6 @@
       customTimeSlots = snapshot.val() || {};
       if (currentUser) renderSchedule();
     });
-
-    const scheduleContainer = document.getElementById('schedule-container');
-    document.getElementById('btn-mode-handy').addEventListener('click', (e) => {
-      scheduleContainer.className = "schedule-grid mode-handy";
-      setActiveModeBtn(e.target);
-    });
-    document.getElementById('btn-mode-tablet').addEventListener('click', (e) => {
-      scheduleContainer.className = "schedule-grid mode-tablet";
-      setActiveModeBtn(e.target);
-    });
-
-    function setActiveModeBtn(btn) {
-      document.querySelectorAll('.view-toggle button').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-    }
 
     if (currentUser && userRole) {
       initApp();
@@ -577,128 +627,136 @@
     }
 
     function renderSchedule() {
-      scheduleContainer.innerHTML = "";
+      const tabsContainer = document.getElementById('day-tabs-container');
+      tabsContainer.innerHTML = "";
 
       DAYS.forEach(day => {
-        const dayCol = document.createElement('div');
-        dayCol.className = 'day-column';
+        const tabBtn = document.createElement('button');
+        tabBtn.className = `day-tab-btn ${day === activeDay ? 'active' : ''}`;
+        tabBtn.innerText = day;
+        tabBtn.onclick = () => {
+          activeDay = day;
+          renderSchedule();
+        };
+        tabsContainer.appendChild(tabBtn);
+      });
 
-        let freeMinutes = 0;
-        let bookedMinutes = 0;
+      const scheduleContainer = document.getElementById('schedule-container');
+      scheduleContainer.innerHTML = "";
 
-        let html = `<div class="day-header">${day}</div>`;
-        const daySlots = getSlotsForDay(day);
+      const dayCol = document.createElement('div');
+      dayCol.className = 'day-column';
 
-        daySlots.forEach(slot => {
-          const slotKey = `${day}_${slot.id}`;
-          const slotState = weekData[slotKey] || { status: "-", type: "Übungsfahrt", location: "" };
+      let freeMinutes = 0;
+      let bookedMinutes = 0;
 
-          if (slotState.status === "frei") freeMinutes += slot.duration;
-          if (slotState.status !== "-" && slotState.status !== "frei" && !slotState.status.includes("(wartet)") && slotState.status !== "Theorieunterricht" && slotState.status !== "Pause" && slotState.status !== "Termin") {
-            bookedMinutes += slot.duration;
-          }
+      const daySlots = getSlotsForDay(activeDay);
 
-          let displayStatus = slotState.status;
-          let isOwnBooking = false;
+      daySlots.forEach(slot => {
+        const slotKey = `${activeDay}_${slot.id}`;
+        const slotState = weekData[slotKey] || { status: "-", type: "Übungsfahrt", location: "" };
 
-          if (userRole === "student") {
-            if (slotState.status !== "-" && slotState.status !== "frei" && slotState.status !== "Theorieunterricht" && slotState.status !== "Pause" && slotState.status !== "Termin") {
-              const cleanStatus = slotState.status.replace(" (wartet)", "").trim();
-              if (cleanStatus.toLowerCase() === currentUser.toLowerCase()) {
-                isOwnBooking = true;
-                displayStatus = slotState.status;
-              } else {
-                displayStatus = "belegt";
-              }
+        if (slotState.status === "frei") freeMinutes += slot.duration;
+        if (slotState.status !== "-" && slotState.status !== "frei" && !slotState.status.includes("(wartet)") && slotState.status !== "Theorieunterricht" && slotState.status !== "Pause" && slotState.status !== "Termin") {
+          bookedMinutes += slot.duration;
+        }
+      });
+
+      let headerHtml = `<span>Frei: <b style="color:var(--color-frei)">${freeMinutes}m</b></span><span>Stundenplan // ${activeDay}</span><span>Gebucht: <b style="color:#6ba368">${bookedMinutes}m</b></span>`;
+
+      let html = `<div class="day-header">${headerHtml}</div><div class="slots-grid">`;
+
+      daySlots.forEach(slot => {
+        const slotKey = `${activeDay}_${slot.id}`;
+        const slotState = weekData[slotKey] || { status: "-", type: "Übungsfahrt", location: "" };
+
+        let displayStatus = slotState.status;
+        let isOwnBooking = false;
+
+        if (userRole === "student") {
+          if (slotState.status !== "-" && slotState.status !== "frei" && slotState.status !== "Theorieunterricht" && slotState.status !== "Pause" && slotState.status !== "Termin") {
+            const cleanStatus = slotState.status.replace(" (wartet)", "").trim();
+            if (cleanStatus.toLowerCase() === currentUser.toLowerCase()) {
+              isOwnBooking = true;
+              displayStatus = slotState.status;
+            } else {
+              displayStatus = "belegt";
             }
           }
+        }
 
-          const isFrei = displayStatus === "frei";
-          const isPause = displayStatus === "Pause";
-          const isWartet = displayStatus && displayStatus.includes("(wartet)");
-          const isTheorie = displayStatus === "Theorieunterricht";
-          const isTermin = displayStatus === "Termin";
-          const isBelegt = displayStatus === "belegt";
-          const isEmpty = displayStatus === "-";
-          const isGebucht = !isFrei && !isPause && !isWartet && !isTheorie && !isTermin && !isBelegt && !isEmpty;
-          const editableClass = userRole === "admin" ? "editable" : "";
+        const isFrei = displayStatus === "frei";
+        const isPause = displayStatus === "Pause";
+        const isWartet = displayStatus && displayStatus.includes("(wartet)");
+        const isTheorie = displayStatus === "Theorieunterricht";
+        const isTermin = displayStatus === "Termin";
+        const isBelegt = displayStatus === "belegt";
+        const isEmpty = displayStatus === "-";
+        const isGebucht = !isFrei && !isPause && !isWartet && !isTheorie && !isTermin && !isBelegt && !isEmpty;
 
-          const rawType = slotState.type ? slotState.type.trim() : "Übungsfahrt";
+        const rawType = slotState.type ? slotState.type.trim() : "Übungsfahrt";
+        const [startTime, endTime] = slot.time.split('-').map(s => s ? s.trim() : "");
 
-          html += `
-            <div class="slot-card">
-              <div class="slot-status ${isFrei ? 'frei' : ''} ${isGebucht ? 'gebucht' : ''} ${isPause ? 'pause' : ''} ${isWartet ? 'wartet' : ''} ${isTheorie ? 'theorie' : ''} ${isTermin ? 'termin' : ''} ${isBelegt ? 'belegt' : ''} ${isEmpty ? 'empty' : ''}" onclick="cycleStatus('${day}', '${slot.id}', '${slotState.status}')">
+        html += `
+          <div class="slot-card">
+            <div class="slot-left">
+              ${userRole === "admin" ? `
+                <input type="text" class="slot-time-input" id="start_${activeDay}_${slot.id}" value="${startTime || ''}" onchange="saveTimeChange('${activeDay}', '${slot.id}')">
+                <span>-</span>
+                <input type="text" class="slot-time-input" id="end_${activeDay}_${slot.id}" value="${endTime || ''}" onchange="saveTimeChange('${activeDay}', '${slot.id}')">
+              ` : `
+                <div class="slot-time-static">${slot.time}</div>
+              `}
+            </div>
+            
+            <div class="slot-center">
+              <div class="slot-status ${isFrei ? 'frei' : ''} ${isGebucht ? 'gebucht' : ''} ${isPause ? 'pause' : ''} ${isWartet ? 'wartet' : ''} ${isTheorie ? 'theorie' : ''} ${isTermin ? 'termin' : ''} ${isBelegt ? 'belegt' : ''} ${isEmpty ? 'empty' : ''}" onclick="cycleStatus('${activeDay}', '${slot.id}', '${slotState.status}')">
                 ${displayStatus}
               </div>
-              <div class="slot-time ${editableClass}" onclick="event.stopPropagation(); openTimeEditModal('${day}', '${slot.id}', '${slot.time}', ${slot.duration})">
-                ${slot.time} Uhr (${slot.duration} Min.) ${userRole === "admin" ? "✏️" : ""}
-              </div>
-              ${(userRole === "admin" || isOwnBooking) && slotState.location ? `<div style="font-size:0.7rem; color:var(--highlight-yellow)">📍 ${slotState.location}</div>` : ''}
+              ${(userRole === "admin" || isOwnBooking) && slotState.location ? `<div style="font-size:0.75rem; color:var(--highlight-yellow); text-align:center; margin-top:2px;">📍 ${slotState.location}</div>` : ''}
+            </div>
+
+            <div class="slot-right">
+              <div>${slot.duration} Min.</div>
               ${slotState.status !== "-" && slotState.status !== "Theorieunterricht" && slotState.status !== "Termin" && (userRole === "admin" || isOwnBooking) ? `
-                <div class="slot-type ${rawType === 'Fahrprüfung' ? 'slot-type-fahrprüfung' : ''}" onclick="cycleType('${day}', '${slot.id}')">
+                <div class="slot-type ${rawType === 'Fahrprüfung' ? 'slot-type-fahrprüfung' : ''}" onclick="cycleType('${activeDay}', '${slot.id}')">
                   ${rawType}
                 </div>
               ` : ''}
-            </div>`;
-        });
-
-        if (userRole === "admin") {
-          html += `
-            <div class="stats-bar">
-              <div>Frei: <b style="color:var(--color-frei)">${freeMinutes}m</b></div>
-              <div>Gebucht: <b style="color:#6ba368">${bookedMinutes}m</b></div>
-            </div>`;
-        }
-
-        dayCol.innerHTML = html;
-        scheduleContainer.appendChild(dayCol);
+            </div>
+          </div>`;
       });
+
+      html += `</div>`;
+
+      dayCol.innerHTML = html;
+      scheduleContainer.appendChild(dayCol);
     }
 
-    window.openTimeEditModal = (day, slotId, timeStr, duration) => {
+    window.saveTimeChange = (day, slotId) => {
       if (userRole !== "admin") return;
-      if (window.event) window.event.stopPropagation();
-      editingSlotDay = day;
-      editingSlotId = slotId;
-      document.getElementById('time-range-input').value = timeStr;
-      document.getElementById('time-modal').style.display = 'flex';
-    };
-
-    document.getElementById('time-save-btn').onclick = () => {
-      const newTimeRange = document.getElementById('time-range-input').value.trim();
+      const startVal = document.getElementById(`start_${day}_${slotId}`).value.trim();
+      const endVal = document.getElementById(`end_${day}_${slotId}`).value.trim();
+      const newTimeRange = `${startVal} - ${endVal}`;
       const calculatedDuration = flexCalculateDuration(newTimeRange);
 
-      if (!newTimeRange || calculatedDuration === null) {
-        alert("Bitte die Zeit im Format HH:MM - HH:MM eingeben (z.B. 06:30 - 07:19 oder 6:30 - 7:19)");
+      if (!startVal || !endVal || calculatedDuration === null) {
+        alert("Bitte gültige Zeiten im Format HH:MM eingeben!");
         return;
       }
 
-      if (!editingSlotDay || !editingSlotId) {
-        alert("Fehler: Tag oder Slot-ID konnte nicht ermittelt werden.");
-        return;
-      }
-
-      let daySlots = JSON.parse(JSON.stringify(getSlotsForDay(editingSlotDay)));
-      const slotIdx = daySlots.findIndex(s => s.id === editingSlotId);
+      let daySlots = JSON.parse(JSON.stringify(getSlotsForDay(day)));
+      const slotIdx = daySlots.findIndex(s => s.id === slotId);
 
       if (slotIdx !== -1) {
         daySlots[slotIdx].time = newTimeRange;
         daySlots[slotIdx].duration = calculatedDuration;
 
-        set(ref(db, `wochenstruktur/ZEITEN_${editingSlotDay}`), daySlots)
-          .then(() => {
-            document.getElementById('time-modal').style.display = 'none';
-          })
+        set(ref(db, `wochenstruktur/ZEITEN_${day}`), daySlots)
           .catch((err) => {
             alert("Fehler beim Speichern in Firebase: " + err.message);
           });
-      } else {
-        alert("Slot nicht gefunden!");
       }
-    };
-
-    document.getElementById('time-cancel-btn').onclick = () => {
-      document.getElementById('time-modal').style.display = 'none';
     };
 
     window.cycleStatus = (day, slotId, currentStatus) => {
@@ -725,30 +783,21 @@
       }
     };
 
-    // Feste Durchschaltung per direkter If/Else-Logik (falls man doch im Planer klickt)
     window.cycleType = (day, slotId) => {
       if (userRole !== "admin") return;
       const slotKey = `${day}_${slotId}`;
       const slot = weekData[slotKey] || {};
       
       let currentType = slot.type ? slot.type.trim() : "Übungsfahrt";
-      
       let nextType = "Übungsfahrt";
-      if (currentType === "Übungsfahrt") {
-        nextType = "Sonderfahrt";
-      } else if (currentType === "Sonderfahrt") {
-        nextType = "Prüfungsvorbereitung";
-      } else if (currentType === "Prüfungsvorbereitung") {
-        nextType = "Prüfungssimulation";
-      } else if (currentType === "Prüfungssimulation") {
-        nextType = "Fahrprüfung";
-      } else if (currentType === "Fahrprüfung") {
-        nextType = "Schaltwagen";
-      } else if (currentType === "Schaltwagen") {
-        nextType = "Termin";
-      } else {
-        nextType = "Übungsfahrt";
-      }
+
+      if (currentType === "Übungsfahrt") nextType = "Sonderfahrt";
+      else if (currentType === "Sonderfahrt") nextType = "Prüfungsvorbereitung";
+      else if (currentType === "Prüfungsvorbereitung") nextType = "Prüfungssimulation";
+      else if (currentType === "Prüfungssimulation") nextType = "Fahrprüfung";
+      else if (currentType === "Fahrprüfung") nextType = "Schaltwagen";
+      else if (currentType === "Schaltwagen") nextType = "Termin";
+      else nextType = "Übungsfahrt";
       
       updateSlot(slotKey, { type: nextType });
     };
@@ -763,7 +812,7 @@
     function openBookingModal(day, slotId) {
       currentTargetSlot = `${day}_${slotId}`;
       document.getElementById('student-select-group').classList.remove('hidden');
-      document.getElementById('lesson-type-group').classList.remove('hidden'); // Fahrttyp-Auswahl anzeigen
+      document.getElementById('lesson-type-group').classList.remove('hidden');
       document.getElementById('modal-termin-btn').classList.remove('hidden');
       document.getElementById('modal-theorie-btn').classList.remove('hidden');
       document.getElementById('modal-pause-btn').classList.remove('hidden');
@@ -776,19 +825,11 @@
       const locationSelect = document.getElementById('modal-location-select');
 
       if (slotState.status && slotState.status.includes("(wartet)")) {
-        const studentName = slotState.status.replace(" (wartet)", "").trim();
-        studentSelect.value = studentName;
+        studentSelect.value = slotState.status.replace(" (wartet)", "").trim();
       }
 
-      if (slotState.type) {
-        lessonTypeSelect.value = slotState.type.trim();
-      } else {
-        lessonTypeSelect.value = "Übungsfahrt";
-      }
-
-      if (slotState.location) {
-        locationSelect.value = slotState.location;
-      }
+      lessonTypeSelect.value = slotState.type ? slotState.type.trim() : "Übungsfahrt";
+      if (slotState.location) locationSelect.value = slotState.location;
 
       document.getElementById('booking-modal').style.display = 'flex';
     }
@@ -796,7 +837,7 @@
     function openStudentRequestModal(day, slotId) {
       currentTargetSlot = `${day}_${slotId}`;
       document.getElementById('student-select-group').classList.add('hidden');
-      document.getElementById('lesson-type-group').classList.add('hidden'); // Für Schüler im Anfrage-Modal ausblenden
+      document.getElementById('lesson-type-group').classList.add('hidden');
       document.getElementById('modal-termin-btn').classList.add('hidden');
       document.getElementById('modal-theorie-btn').classList.add('hidden');
       document.getElementById('modal-pause-btn').classList.add('hidden');
@@ -860,4 +901,3 @@
   </script>
 </body>
 </html>
-
