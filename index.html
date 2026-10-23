@@ -535,9 +535,24 @@
       { id: "s13", time: "22:30 - 23:15", duration: 45 }
     ];
 
+    const DEFAULT_TIME_SLOTS_FREITAG = [
+      { id: "s1", time: "06:00 - 07:30", duration: 90 },
+      { id: "s2", time: "07:30 - 09:00", duration: 90 },
+      { id: "s3", time: "09:00 - 10:30", duration: 90 },
+      { id: "s4", time: "10:30 - 11:00", duration: 30 },
+      { id: "s5", time: "11:00 - 12:30", duration: 90 },
+      { id: "s6", time: "12:30 - 14:00", duration: 90 },
+      { id: "s7", time: "14:00 - 15:30", duration: 90 },
+      { id: "s8", time: "16:15 - 17:45", duration: 90 },
+      { id: "s9", time: "17:45 - 18:00", duration: 15 },
+      { id: "s10", time: "18:00 - 19:30", duration: 90 },
+      { id: "s11", time: "19:30 - 21:00", duration: 90 },
+      { id: "s12", time: "21:00 - 22:30", duration: 90 }
+    ];
+
     const DEFAULT_WEEK_SCHEDULE = {
       "Montag_s1": { status: "-", type: "Übungsfahrt", location: "" },
-      "Montag_s2": { status: "-", type: "Übungsfahrt", location: "" },
+      "Montag_s2": { status: "Termin", type: "Termin", location: "" },
       "Montag_s3": { status: "frei", type: "Übungsfahrt", location: "" },
       "Montag_s4": { status: "frei", type: "Übungsfahrt", location: "" },
       "Montag_s5": { status: "Pause", type: "Übungsfahrt", location: "" },
@@ -567,7 +582,7 @@
       "Mittwoch_s1": { status: "-", type: "Übungsfahrt", location: "" },
       "Mittwoch_s2": { status: "frei", type: "Übungsfahrt", location: "" },
       "Mittwoch_s3": { status: "frei", type: "Übungsfahrt", location: "" },
-      "Mittwoch_s4": { status: "frei", type: "Sonderfahrt", location: "" },
+      "Mittwoch_s4": { status: "frei", type: "Übungsfahrt", location: "" },
       "Mittwoch_s5": { status: "Pause", type: "Übungsfahrt", location: "" },
       "Mittwoch_s6": { status: "frei", type: "Übungsfahrt", location: "" },
       "Mittwoch_s7": { status: "frei", type: "Übungsfahrt", location: "" },
@@ -575,15 +590,15 @@
       "Mittwoch_s9": { status: "Pause", type: "Übungsfahrt", location: "" },
       "Mittwoch_s10": { status: "Theorieunterricht", type: "Übungsfahrt", location: "" },
       "Mittwoch_s11": { status: "frei", type: "Übungsfahrt", location: "" },
-      "Mittwoch_s12": { status: "frei", type: "Schaltwagen", location: "" },
+      "Mittwoch_s12": { status: "frei", type: "Übungsfahrt", location: "" },
       "Mittwoch_s13": { status: "frei", type: "Übungsfahrt", location: "" },
 
       "Donnerstag_s1": { status: "frei", type: "Übungsfahrt", location: "" },
       "Donnerstag_s2": { status: "frei", type: "Übungsfahrt", location: "" },
       "Donnerstag_s3": { status: "frei", type: "Übungsfahrt", location: "" },
-      "Donnerstag_s4": { status: "Pause", type: "Übungsfahrt", location: "" },
-      "Donnerstag_s5": { status: "frei", type: "Übungsfahrt", location: "" },
-      "Donnerstag_s6": { status: "Pause", type: "Übungsfahrt", location: "" },
+      "Donnerstag_s4": { status: "frei", type: "Übungsfahrt", location: "" },
+      "Donnerstag_s5": { status: "Pause", type: "Übungsfahrt", location: "" },
+      "Donnerstag_s6": { status: "frei", type: "Übungsfahrt", location: "" },
       "Donnerstag_s7": { status: "frei", type: "Übungsfahrt", location: "" },
       "Donnerstag_s8": { status: "frei", type: "Übungsfahrt", location: "" },
       "Donnerstag_s9": { status: "Pause", type: "Übungsfahrt", location: "" },
@@ -595,16 +610,15 @@
       "Freitag_s1": { status: "frei", type: "Übungsfahrt", location: "" },
       "Freitag_s2": { status: "frei", type: "Übungsfahrt", location: "" },
       "Freitag_s3": { status: "frei", type: "Übungsfahrt", location: "" },
-      "Freitag_s4": { status: "frei", type: "Übungsfahrt", location: "" },
-      "Freitag_s5": { status: "Pause", type: "Übungsfahrt", location: "" },
+      "Freitag_s4": { status: "Pause", type: "Übungsfahrt", location: "" },
+      "Freitag_s5": { status: "frei", type: "Übungsfahrt", location: "" },
       "Freitag_s6": { status: "frei", type: "Übungsfahrt", location: "" },
-      "Freitag_s7": { status: "-", type: "Übungsfahrt", location: "" },
+      "Freitag_s7": { status: "frei", type: "Übungsfahrt", location: "" },
       "Freitag_s8": { status: "-", type: "Übungsfahrt", location: "" },
       "Freitag_s9": { status: "-", type: "Übungsfahrt", location: "" },
       "Freitag_s10": { status: "-", type: "Übungsfahrt", location: "" },
       "Freitag_s11": { status: "-", type: "Übungsfahrt", location: "" },
-      "Freitag_s12": { status: "-", type: "Übungsfahrt", location: "" },
-      "Freitag_s13": { status: "-", type: "Übungsfahrt", location: "" }
+      "Freitag_s12": { status: "-", type: "Übungsfahrt", location: "" }
     };
 
     const DAYS = ["Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"];
@@ -619,6 +633,9 @@
     function getSlotsForDay(day) {
       if (customTimeSlots && customTimeSlots[`ZEITEN_${day}`]) {
         return customTimeSlots[`ZEITEN_${day}`];
+      }
+      if (day === "Freitag") {
+        return DEFAULT_TIME_SLOTS_FREITAG;
       }
       return DEFAULT_TIME_SLOTS_STANDARD;
     }
