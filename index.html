@@ -812,13 +812,18 @@
     function loadStudentList() {
       const select = document.getElementById('modal-student-select');
       select.innerHTML = "";
-      Object.values(dbUsers).forEach(student => {
-        if (student.name) {
-          const option = document.createElement('option');
-          option.value = student.name;
-          option.textContent = student.name;
-          select.appendChild(option);
-        }
+      
+      // Fahrschüler filtern, Namen extrahieren und alphabetisch sortieren (A-Z)
+      const studentNames = Object.values(dbUsers)
+        .map(student => student.name)
+        .filter(name => name)
+        .sort((a, b) => a.localeCompare(b, 'de', { sensitivity: 'base' }));
+
+      studentNames.forEach(name => {
+        const option = document.createElement('option');
+        option.value = name;
+        option.textContent = name;
+        select.appendChild(option);
       });
     }
 
