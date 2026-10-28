@@ -12,7 +12,7 @@
       --panel-border: #334231;
       --accent-green: #4d6645;
       --highlight-yellow: #cfa144;
-      --alert-red: #8b3232;
+      --alert-red: #ff3333;
       --text-main: #d3dad1;
       --text-dim: #738370;
       --slot-bg: #101510;
@@ -858,7 +858,10 @@
         }
       });
 
-      let headerHtml = `<span>Frei: <b style="color:var(--color-frei)">${freeMinutes}m</b></span><span>Stundenplan // ${activeDay}</span><span>Gebucht: <b style="color:#6ba368">${bookedMinutes}m</b></span>`;
+      // Wenn gebuchte Minuten > 495, wird die Textfarbe rot (#ff3333 / var(--alert-red)), ansonsten die gewohnte Grünfarbe (#6ba368)
+      const bookedColor = bookedMinutes > 495 ? "var(--alert-red)" : "#6ba368";
+
+      let headerHtml = `<span>Frei: <b style="color:var(--color-frei)">${freeMinutes}m</b></span><span>Stundenplan // ${activeDay}</span><span>Gebucht: <b style="color:${bookedColor}">${bookedMinutes}m</b></span>`;
 
       let html = `<div class="day-header">${headerHtml}</div><div class="slots-grid">`;
 
