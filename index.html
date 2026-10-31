@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HQ DRIVING COMMAND // PLANER</title>
+  <title>FAHR MIT MANUEL // PLANER</title>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Teko:wght@500;700&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -31,7 +31,7 @@
       background-color: var(--bg-dark);
       color: var(--text-main);
       font-family: 'Share Tech Mono', monospace;
-      padding: 10px;
+      padding: 6px;
     }
 
     h1, h2, h3 {
@@ -43,19 +43,81 @@
     header {
       background-color: var(--panel-bg);
       border: 2px solid var(--panel-border);
-      padding: 15px;
-      margin-bottom: 15px;
+      padding: 10px 12px;
+      margin-bottom: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.7);
+    }
+
+    .header-top-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      box-shadow: 0 0 10px rgba(0,0,0,0.7);
+      width: 100%;
+    }
+
+    .header-title-container {
+      display: flex;
+      align-items: baseline;
+    }
+
+    .header-title-container h1 {
+      font-size: 1.8rem;
+      line-height: 1;
+      margin: 0;
+    }
+
+    /* V1.0 Tag perfekt in der Zeile ausgerichtet und ohne störenden Kasten-Rahmen */
+    .version-badge {
+      background: var(--highlight-yellow);
+      color: #000000;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.65rem;
+      font-weight: bold;
+      padding: 1px 4px;
+      margin-left: 8px;
+      vertical-align: middle;
+      letter-spacing: 0px;
+    }
+
+    .header-bottom-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .header-info-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      width: 100%;
+    }
+
+    .info-item {
+      background: #090c09;
+      border: 1px solid var(--panel-border);
+      padding: 5px 4px;
+      font-size: 0.72rem;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .info-item span {
+      color: var(--highlight-yellow);
+      font-weight: bold;
     }
 
     .status-tag {
       background: var(--panel-border);
       color: var(--highlight-yellow);
-      padding: 2px 8px;
-      font-size: 0.85rem;
+      padding: 1px 6px;
+      font-size: 0.75rem;
       border: 1px solid var(--highlight-yellow);
     }
 
@@ -63,11 +125,12 @@
       background: var(--panel-bg);
       color: var(--text-main);
       border: 1px solid var(--accent-green);
-      padding: 8px 14px;
+      padding: 6px 12px;
       cursor: pointer;
       font-family: 'Share Tech Mono', monospace;
       text-transform: uppercase;
       transition: all 0.2s;
+      font-size: 0.85rem;
     }
 
     .btn-mil:hover, .btn-mil.active {
@@ -89,14 +152,14 @@
       box-shadow: 0 0 15px rgba(0,0,0,0.8);
     }
 
-    .form-group { margin-bottom: 15px; }
+    .form-group { margin-bottom: 12px; }
 
     .form-group label {
-      display: block; font-size: 0.8rem; color: var(--text-dim); margin-bottom: 5px;
+      display: block; font-size: 0.8rem; color: var(--text-dim); margin-bottom: 4px;
     }
 
     .form-group input, .form-group select {
-      width: 100%; padding: 10px; background: #090c09;
+      width: 100%; padding: 8px; background: #090c09;
       border: 1px solid var(--panel-border); color: var(--text-main);
       font-family: 'Share Tech Mono', monospace;
     }
@@ -104,21 +167,21 @@
     /* DAY TABS NAVIGATION */
     .day-tabs {
       display: flex;
-      gap: 5px;
-      margin-bottom: 15px;
+      gap: 4px;
+      margin-bottom: 10px;
       flex-wrap: wrap;
     }
 
     .day-tab-btn {
       flex: 1;
-      min-width: 100px;
+      min-width: 85px;
       background: var(--panel-bg);
       color: var(--text-main);
       border: 1px solid var(--panel-border);
-      padding: 10px;
+      padding: 6px;
       cursor: pointer;
       font-family: 'Teko', sans-serif;
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       text-transform: uppercase;
       letter-spacing: 1px;
       text-align: center;
@@ -141,15 +204,15 @@
     .day-column {
       background: var(--panel-bg);
       border: 1px solid var(--panel-border);
-      padding: 15px;
+      padding: 10px;
     }
 
     .day-header {
       background: var(--panel-border);
-      padding: 8px 12px;
-      margin-bottom: 15px;
+      padding: 6px 10px;
+      margin-bottom: 10px;
       color: var(--highlight-yellow);
-      font-size: 1.3rem;
+      font-size: 1.2rem;
       font-family: 'Teko', sans-serif;
       text-transform: uppercase;
       letter-spacing: 1px;
@@ -161,17 +224,17 @@
     .slots-grid {
       display: grid;
       grid-template-columns: 1fr;
-      gap: 10px;
+      gap: 6px;
     }
 
     .slot-card {
       background: var(--slot-bg);
       border: 1px solid var(--panel-border);
-      padding: 10px;
+      padding: 6px 10px;
       display: grid;
-      grid-template-columns: 140px 1fr 120px;
+      grid-template-columns: 130px 1fr 110px;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
     }
 
     .slot-left {
@@ -183,12 +246,12 @@
 
     .slot-time-clickable {
       font-family: 'Teko', sans-serif;
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       color: var(--highlight-yellow);
       letter-spacing: 1px;
       background: #090c09;
       border: 1px dashed var(--panel-border);
-      padding: 2px 6px;
+      padding: 2px 4px;
       text-align: center;
       width: 100%;
       transition: all 0.2s;
@@ -201,7 +264,7 @@
 
     .slot-time-static {
       font-family: 'Teko', sans-serif;
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       color: var(--highlight-yellow);
       letter-spacing: 1px;
     }
@@ -216,18 +279,18 @@
     .slot-status {
       font-weight: bold; 
       cursor: pointer; 
-      padding: 6px 15px;
+      padding: 4px 12px;
       background: var(--color-empty);
       color: #ffffff;
       border: 1px dashed var(--color-empty); 
       user-select: none;
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       display: flex;
       justify-content: center;
       align-items: center;
       text-align: center;
       width: 100%;
-      max-width: 80%;
+      max-width: 85%;
     }
 
     .slot-status.frei { background: var(--color-frei); color: #000000; border: 1px solid var(--color-frei); }
@@ -240,8 +303,8 @@
     .slot-status.empty { background: var(--color-empty); color: #ffffff; border: 1px dashed var(--color-empty); }
 
     .slot-type {
-      font-size: 0.75rem; color: var(--text-dim); cursor: pointer;
-      text-decoration: underline; user-select: none; margin-top: 2px; text-align: right;
+      font-size: 0.7rem; color: var(--text-dim); cursor: pointer;
+      text-decoration: underline; user-select: none; margin-top: 1px; text-align: right;
     }
 
     .slot-type-fahrprüfung {
@@ -251,7 +314,7 @@
 
     .slot-right {
       text-align: right;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       color: var(--text-dim);
       display: flex;
       flex-direction: column;
@@ -262,7 +325,23 @@
     .admin-panel {
       background: var(--panel-bg);
       border: 2px solid var(--highlight-yellow);
-      padding: 15px; margin-bottom: 20px;
+      padding: 10px; margin-bottom: 10px;
+    }
+
+    .student-manage-list {
+      margin-top: 6px;
+      max-height: 140px;
+      overflow-y: auto;
+    }
+
+    .student-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #090c09;
+      border: 1px solid var(--panel-border);
+      padding: 4px 8px;
+      margin-bottom: 3px;
     }
 
     /* MODAL */
@@ -356,12 +435,24 @@
 <body>
 
   <header>
-    <div>
-      <h1>HQ DRIVING COMMAND <span class="status-tag">v1.0</span></h1>
-      <div id="user-info" class="status-tag">STATUS: ABGEMELDET</div>
+    <div class="header-top-row">
+      <div class="header-title-container">
+        <h1>Fahr mit Manuel<span class="version-badge">v1.0</span></h1>
+      </div>
+      <div>
+        <button id="logout-btn" class="btn-mil btn-alert hidden" style="padding: 4px 10px;">Abmelden</button>
+      </div>
     </div>
-    <div id="header-actions">
-      <button id="logout-btn" class="btn-mil btn-alert hidden">Abmelden</button>
+    
+    <div class="header-bottom-row">
+      <div id="user-info" class="status-tag" style="margin-bottom: 4px; width: 100%;">STATUS: ABGEMELDET</div>
+      
+      <div class="header-info-grid">
+        <div class="info-item">📍 Biedenkopf</div>
+        <div class="info-item">🕒 <span id="header-time">--:--:--</span></div>
+        <div class="info-item">🌅 <span id="header-sunrise">--:--</span></div>
+        <div class="info-item">🌇 <span id="header-sunset">--:--</span></div>
+      </div>
     </div>
   </header>
 
@@ -369,7 +460,7 @@
   <div id="auth-section">
     <div class="auth-card">
       <h2>[ ANMELDUNG ]</h2>
-      <p style="font-size:0.8rem; color:var(--text-dim); margin-bottom:15px;">
+      <p style="font-size:0.8rem; color:var(--text-dim); margin-bottom:12px;">
         Fahrschüler: Vom Fahrlehrer angelegten Namen eingeben. Bei der Erst-Anmeldung vergibst du deine eigene PIN.
       </p>
       
@@ -385,9 +476,9 @@
 
       <button id="login-btn" class="btn-mil" style="width: 100%;">EINLOGGEN</button>
       
-      <div id="first-login-notice" class="hidden" style="margin-top: 15px; border-top: 1px solid var(--panel-border); padding-top: 10px;">
+      <div id="first-login-notice" class="hidden" style="margin-top: 12px; border-top: 1px solid var(--panel-border); padding-top: 8px;">
         <p style="font-size: 0.75rem; color: var(--highlight-yellow);">Willkommen! Bitte vergib bei deiner ersten Anmeldung deine eigene 4-stellige PIN:</p>
-        <div class="form-group" style="margin-top: 10px;">
+        <div class="form-group" style="margin-top: 8px;">
           <input type="password" id="new-pin" placeholder="Neue Wunsch-PIN" maxlength="4">
         </div>
         <button id="set-pin-btn" class="btn-mil" style="width: 100%;">PIN SPEICHERN & EINLOGGEN</button>
@@ -401,11 +492,14 @@
     <!-- ADMIN PANEL -->
     <div id="admin-panel" class="admin-panel hidden">
       <h3>COMMANDER PANEL (FAHRLEHRER)</h3>
-      <div style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;">
-        <input type="text" id="new-student-name" placeholder="Name des neuen Fahrschülers" style="flex: 1; min-width: 200px; padding: 8px; background: #000; color: #fff; border: 1px solid var(--panel-border);">
+      <div style="display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap;">
+        <input type="text" id="new-student-name" placeholder="Name des neuen Fahrschülers" style="flex: 1; min-width: 180px; padding: 6px 8px; background: #000; color: #fff; border: 1px solid var(--panel-border);">
         <button id="add-student-btn" class="btn-mil">+ Fahrschüler anlegen</button>
         <button id="reset-times-btn" class="btn-mil btn-alert">Zeiten auf DSTT zurücksetzen</button>
       </div>
+
+      <h4 id="student-list-header" style="margin-top:10px; font-size: 0.95rem; color: var(--highlight-yellow); border-top: 1px solid var(--panel-border); padding-top: 6px;">FAHRSCHÜLER (0)</h4>
+      <div id="student-list-manage" class="student-manage-list"></div>
     </div>
 
     <!-- WOCHENTAG-REGISTERKARTEN (TABS) -->
@@ -518,6 +612,69 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
+
+    const BIEDENKOPF_LAT = 50.9167;
+    const BIEDENKOPF_LNG = 8.5167;
+
+    function calculateSunTimes(lat, lng, date) {
+      const radians = Math.PI / 180.0;
+      const y = date.getFullYear();
+      const m = date.getMonth() + 1;
+      const d = date.getDate();
+
+      const a = Math.floor((14 - m) / 12);
+      const year = y + 4800 - a;
+      const month = m + 12 * a - 3;
+      const j_day = d + Math.floor((153 * month + 2) / 5) + 365 * year + Math.floor(year / 4) - Math.floor(year / 100) + Math.floor(year / 400) - 32045;
+      
+      const n_star = j_day - 2451545.0009 - lng / 360.0;
+      const n = Math.floor(n_star + 0.5);
+      const solar_noon = 2451545.0009 - lng / 360.0 + n;
+      const M = (356.0470 + 0.9856002585 * n) % 360;
+      const C = 1.9148 * Math.sin(M * radians) + 0.02 * Math.sin(2 * M * radians) + 0.0003 * Math.sin(3 * M * radians);
+      const L = (M + 102.9372 + C + 180) % 360;
+      const j_transit = solar_noon + 0.0053 * Math.sin(M * radians) - 0.0069 * Math.sin(2 * L * radians);
+      const D = Math.asin(Math.sin(L * radians) * Math.sin(23.45 * radians)) * (180.0 / Math.PI);
+      
+      const cos_omega = (Math.sin(-0.83 * radians) - Math.sin(lat * radians) * Math.sin(D * radians)) / (Math.cos(lat * radians) * Math.cos(D * radians));
+      
+      if (cos_omega > 1 || cos_omega < -1) return { sunrise: "--:--", sunset: "--:--" };
+
+      const omega = Math.acos(cos_omega) * (180.0 / Math.PI);
+      const j_set = j_transit + omega / 360.0;
+      const j_rise = j_transit - omega / 360.0;
+
+      const utc_time_set = 24 * (j_set - j_day) + 12;
+      const utc_time_rise = 24 * (j_rise - j_day) + 12;
+
+      const tz_offset = -date.getTimezoneOffset() / 60;
+
+      const local_rise = (utc_time_rise + tz_offset + 24) % 24;
+      const local_set = (utc_time_set + tz_offset + 24) % 24;
+
+      const formatTime = (decimalHours) => {
+        const hrs = Math.floor(decimalHours);
+        const mins = Math.floor((decimalHours - hrs) * 60);
+        return `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
+      };
+
+      return {
+        sunrise: formatTime(local_rise),
+        sunset: formatTime(local_set)
+      };
+    }
+
+    function updateHeaderClockAndSun() {
+      const now = new Date();
+      document.getElementById('header-time').innerText = now.toLocaleTimeString('de-DE');
+      
+      const sun = calculateSunTimes(BIEDENKOPF_LAT, BIEDENKOPF_LNG, now);
+      document.getElementById('header-sunrise').innerText = sun.sunrise;
+      document.getElementById('header-sunset').innerText = sun.sunset;
+    }
+
+    setInterval(updateHeaderClockAndSun, 1000);
+    updateHeaderClockAndSun();
 
     const DEFAULT_TIME_SLOTS_STANDARD = [
       { id: "s1", time: "06:00 - 07:30", duration: 90 },
@@ -662,7 +819,10 @@
 
     onValue(ref(db, "schueler/"), (snapshot) => {
       dbUsers = snapshot.val() || {};
-      if (userRole === "admin") loadStudentList();
+      if (userRole === "admin") {
+        loadStudentList();
+        renderManageStudentList();
+      }
     });
 
     onValue(ref(db, "wochenplan/"), (snapshot) => {
@@ -767,6 +927,7 @@
       if (userRole === "admin") {
         document.getElementById('admin-panel').classList.remove('hidden');
         loadStudentList();
+        renderManageStudentList();
       }
 
       renderSchedule();
@@ -813,7 +974,6 @@
       const select = document.getElementById('modal-student-select');
       select.innerHTML = "";
       
-      // Fahrschüler filtern, Namen extrahieren und alphabetisch sortieren (A-Z)
       const studentNames = Object.values(dbUsers)
         .map(student => student.name)
         .filter(name => name)
@@ -825,6 +985,58 @@
         option.textContent = name;
         select.appendChild(option);
       });
+    }
+
+    function renderManageStudentList() {
+      const manageContainer = document.getElementById('student-list-manage');
+      const headerElement = document.getElementById('student-list-header');
+      if (!manageContainer) return;
+      manageContainer.innerHTML = "";
+
+      const studentEntries = Object.entries(dbUsers)
+        .filter(([key, s]) => s && s.name)
+        .sort((a, b) => a[1].name.localeCompare(b[1].name, 'de', { sensitivity: 'base' }));
+
+      if (headerElement) {
+        headerElement.textContent = `FAHRSCHÜLER (${studentEntries.length})`;
+      }
+
+      if (studentEntries.length === 0) {
+        manageContainer.innerHTML = `<div style="font-size:0.75rem; color:var(--text-dim);">Keine Fahrschüler vorhanden.</div>`;
+        return;
+      }
+
+      studentEntries.forEach(([key, student]) => {
+        const item = document.createElement('div');
+        item.className = 'student-item';
+
+        const nameSpan = document.createElement('span');
+        nameSpan.textContent = student.name;
+        nameSpan.style.fontSize = "0.85rem";
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'btn-mil btn-alert';
+        deleteBtn.style.padding = '1px 6px';
+        deleteBtn.style.fontSize = '0.7rem';
+        deleteBtn.textContent = 'Entfernen';
+        deleteBtn.onclick = () => removeStudent(key, student.name);
+
+        item.appendChild(nameSpan);
+        item.appendChild(deleteBtn);
+        manageContainer.appendChild(item);
+      });
+    }
+
+    function removeStudent(firebaseKey, studentName) {
+      if (confirm(`Möchtest du '${studentName}' wirklich aus der Fahrschüler-Liste entfernen?`)) {
+        remove(ref(db, `schueler/${firebaseKey}`))
+          .then(() => {
+            alert(`Fahrschüler '${studentName}' wurde erfolgreich entfernt.`);
+          })
+          .catch((err) => {
+            alert("Fehler beim Löschen: " + err.message);
+          });
+      }
     }
 
     function renderSchedule() {
@@ -863,7 +1075,6 @@
         }
       });
 
-      // Wenn gebuchte Minuten > 495, wird die Textfarbe rot (#ff3333 / var(--alert-red)), ansonsten die gewohnte Grünfarbe (#6ba368)
       const bookedColor = bookedMinutes > 495 ? "var(--alert-red)" : "#6ba368";
 
       let headerHtml = `<span>Frei: <b style="color:var(--color-frei)">${freeMinutes}m</b></span><span>Stundenplan // ${activeDay}</span><span>Gebucht: <b style="color:${bookedColor}">${bookedMinutes}m</b></span>`;
@@ -899,6 +1110,7 @@
         const isGebucht = !isFrei && !isPause && !isWartet && !isTheorie && !isTermin && !isBelegt && !isEmpty;
 
         const rawType = slotState.type ? slotState.type.trim() : "Übungsfahrt";
+        const showType = slotState.status !== "-" && slotState.status !== "Theorieunterricht" && slotState.status !== "Pause" && slotState.status !== "Termin";
 
         html += `
           <div class="slot-card">
@@ -911,15 +1123,15 @@
             </div>
             
             <div class="slot-center">
-              <div class="slot-status ${isFrei ? 'frei' : ''} ${isGebucht ? 'gebucht' : ''} ${isPause ? 'pause' : ''} ${isWartet ? 'wartet' : ''} ${isTheorie ? 'theorie' : ''} ${isTermin ? 'termin' : ''} ${isBelegt ? 'belegt' : ''} ${isEmpty ? 'empty' : ''}" onclick="handleStatusClick('${activeDay}', '${slot.id}', '${slotState.status}')">
+              <div class="slot-status ${isFrei ? 'frei' : ''} ${isGebucht ? 'gebucht' : ''} ${isPause ? 'pause' : ''} ${isTheorie ? 'theorie' : ''} ${isTermin ? 'termin' : ''} ${isBelegt ? 'belegt' : ''} ${isEmpty ? 'empty' : ''}" onclick="handleStatusClick('${activeDay}', '${slot.id}', '${slotState.status}')">
                 ${displayStatus}
               </div>
-              ${(userRole === "admin" || isOwnBooking) && slotState.location ? `<div style="font-size:0.75rem; color:var(--highlight-yellow); text-align:center; margin-top:2px;">📍 ${slotState.location}</div>` : ''}
+              ${(userRole === "admin" || isOwnBooking) && slotState.location ? `<div style="font-size:0.7rem; color:var(--highlight-yellow); text-align:center; margin-top:1px;">📍 ${slotState.location}</div>` : ''}
             </div>
 
             <div class="slot-right">
               <div>${slot.duration} Min.</div>
-              ${slotState.status !== "-" && slotState.status !== "Theorieunterricht" && slotState.status !== "Termin" && (userRole === "admin" || isOwnBooking) ? `
+              ${showType && (userRole === "admin" || isOwnBooking) ? `
                 <div class="slot-type ${rawType === 'Fahrprüfung' ? 'slot-type-fahrprüfung' : ''}" onclick="cycleType('${activeDay}', '${slot.id}')">
                   ${rawType}
                 </div>
