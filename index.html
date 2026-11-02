@@ -797,6 +797,21 @@
       return DEFAULT_TIME_SLOTS_STANDARD;
     }
 
+    function getStudentWeeklyBookingsCount() {
+      const counts = {};
+      Object.values(weekData).forEach(slotState => {
+        if (!slotState || !slotState.status) return;
+        const status = slotState.status;
+        if (status !== "-" && status !== "frei" && status !== "Theorieunterricht" && status !== "Pause" && status !== "Termin") {
+          const studentName = status.replace(" (wartet)", "").trim();
+          if (studentName) {
+            counts[studentName] = (counts[studentName] || 0) + 1;
+          }
+        }
+      });
+      return counts;
+    }
+
     function flexCalculateDuration(timeStr) {
       const parts = timeStr.split('-');
       if (parts.length !== 2) return null;
@@ -1064,6 +1079,7 @@
       let bookedMinutes = 0;
 
       const daySlots = getSlotsForDay(activeDay);
+      const bookingCounts = getStudentWeeklyBookingsCount();
 
       daySlots.forEach(slot => {
         const slotKey = `${activeDay}_${slot.id}`;
@@ -1088,7 +1104,19 @@
         let displayStatus = slotState.status;
         let isOwnBooking = false;
 
-        if (userRole === "student") {
+        if (userRole === "admin") {
+          if (slotState.status && slotState.status !== "-" && slotState.status !== "frei" && slotState.status !== "Theorieunterricht" && slotState.status !== "Pause" && slotState.status !== "Termin") {
+            const isWartetState = slotState.status.includes("(wartet)");
+            const cleanName = slotState.status.replace(" (wartet)", "").trim();
+            const count = bookingCounts[cleanName] || 0;
+
+            if (isWartetState) {
+              displayStatus = `${cleanName} (${count}) (wartet)`;
+            } else {
+              displayStatus = `${cleanName} (${count})`;
+            }
+          }
+        } else if (userRole === "student") {
           if (slotState.status !== "-" && slotState.status !== "frei" && slotState.status !== "Theorieunterricht" && slotState.status !== "Pause" && slotState.status !== "Termin") {
             const cleanStatus = slotState.status.replace(" (wartet)", "").trim();
             if (cleanStatus.toLowerCase() === currentUser.toLowerCase()) {
@@ -1100,13 +1128,13 @@
           }
         }
 
-        const isFrei = displayStatus === "frei";
-        const isPause = displayStatus === "Pause";
-        const isWartet = displayStatus && displayStatus.includes("(wartet)");
-        const isTheorie = displayStatus === "Theorieunterricht";
-        const isTermin = displayStatus === "Termin";
+        const isFrei = slotState.status === "frei";
+        const isPause = slotState.status === "Pause";
+        const isWartet = slotState.status && slotState.status.includes("(wartet)");
+        const isTheorie = slotState.status === "Theorieunterricht";
+        const isTermin = slotState.status === "Termin";
         const isBelegt = displayStatus === "belegt";
-        const isEmpty = displayStatus === "-";
+        const isEmpty = slotState.status === "-";
         const isGebucht = !isFrei && !isPause && !isWartet && !isTheorie && !isTermin && !isBelegt && !isEmpty;
 
         const rawType = slotState.type ? slotState.type.trim() : "Übungsfahrt";
