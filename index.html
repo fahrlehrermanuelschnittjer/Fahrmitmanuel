@@ -358,7 +358,7 @@
       gap: 6px;
       align-items: center;
       flex-wrap: nowrap;
-      margin-left: auto; /* DOCKT NACH RECHTS VOR DEN BUTTON */
+      margin-left: auto;
     }
 
     .checkbox-item {
@@ -1098,7 +1098,6 @@
         nameSpan.className = 'student-name-text';
         nameSpan.textContent = student.name;
 
-        // CHECKBOXES BEREICH MIT RECHTS-DOCKING (margin-left: auto)
         const checkboxGroup = document.createElement('div');
         checkboxGroup.className = 'checkbox-group-inline';
 
@@ -1478,8 +1477,10 @@
       const lessonTypeSelect = document.getElementById('modal-lesson-type-select');
       const locationSelect = document.getElementById('modal-location-select');
 
-      if (slotState.status && slotState.status.includes("(wartet)")) {
-        studentSelect.value = slotState.status.replace(" (wartet)", "").trim();
+      // Fahrschüler korrekt im Dropdown vorauswählen, wenn der Slot bereits gebucht oder angefragt ist
+      if (slotState.status && slotState.status !== "-" && slotState.status !== "frei" && slotState.status !== "Theorieunterricht" && slotState.status !== "Pause" && slotState.status !== "Termin") {
+        const cleanName = slotState.status.replace(" (wartet)", "").trim();
+        studentSelect.value = cleanName;
       }
 
       updateModalCheckboxes(studentSelect.value);
