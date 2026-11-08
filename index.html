@@ -69,7 +69,6 @@
       margin: 0;
     }
 
-    /* V1.0 Tag perfekt in der Zeile ausgerichtet und ohne störenden Kasten-Rahmen */
     .version-badge {
       background: var(--highlight-yellow);
       color: #000000;
@@ -330,7 +329,7 @@
 
     .student-manage-list {
       margin-top: 6px;
-      max-height: 140px;
+      max-height: 220px;
       overflow-y: auto;
     }
 
@@ -340,8 +339,47 @@
       align-items: center;
       background: #090c09;
       border: 1px solid var(--panel-border);
-      padding: 4px 8px;
-      margin-bottom: 3px;
+      padding: 6px 8px;
+      margin-bottom: 4px;
+      gap: 10px;
+    }
+
+    .student-name-text {
+      font-size: 0.85rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-right: 10px;
+    }
+
+    /* RECHTS ANGEDOCKTE CHECKBOX-GRUPPE */
+    .checkbox-group-inline {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      flex-wrap: nowrap;
+      margin-left: auto; /* DOCKT NACH RECHTS VOR DEN BUTTON */
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      font-size: 0.72rem;
+      color: var(--highlight-yellow);
+      cursor: pointer;
+      user-select: none;
+      background: #101510;
+      padding: 2px 5px;
+      border: 1px solid var(--panel-border);
+      white-space: nowrap;
+    }
+
+    .checkbox-item input[type="checkbox"] {
+      cursor: pointer;
+      accent-color: var(--highlight-yellow);
+      width: 13px;
+      height: 13px;
     }
 
     /* MODAL */
@@ -352,7 +390,7 @@
 
     .modal-content {
       background: var(--panel-bg); border: 2px solid var(--highlight-yellow);
-      padding: 20px; width: 95%; max-width: 550px;
+      padding: 20px; width: 95%; max-width: 580px;
     }
 
     .modal-actions {
@@ -517,6 +555,14 @@
         <label>FAHRSCHÜLER WÄHLEN</label>
         <select id="modal-student-select"></select>
       </div>
+
+      <!-- HAKEN INFO BOX IM BUCHUNGSFENSTER (NUR FAHRLEHRER) -->
+      <div class="form-group" id="modal-checkboxes-group">
+        <label>FAHRSCHÜLER STATUS / INFOS (FAHRLEHRER)</label>
+        <div class="checkbox-group-inline" id="modal-student-info-checkboxes" style="background: #090c09; padding: 6px; border: 1px solid var(--panel-border); margin-left: 0;">
+          <!-- Dynamisch befüllt -->
+        </div>
+      </div>
       
       <div class="form-group" id="lesson-type-group">
         <label>FAHRTSTUNDEN-TYP WÄHLEN</label>
@@ -615,6 +661,16 @@
 
     const BIEDENKOPF_LAT = 50.9167;
     const BIEDENKOPF_LNG = 8.5167;
+
+    const INFO_KEYS = ["GS_AS", "GFA", "VR", "SW", "SF", "PV"];
+    const INFO_LABELS = {
+      GS_AS: "GS/AS",
+      GFA: "GFA",
+      VR: "VR",
+      SW: "SW",
+      SF: "SF",
+      PV: "PV"
+    };
 
     function calculateSunTimes(lat, lng, date) {
       const radians = Math.PI / 180.0;
@@ -960,7 +1016,12 @@
 
       if (!exists) {
         const newRef = push(ref(db, "schueler/"));
-        set(newRef, { name: name, pin: null, erstellt: new Date().toISOString() })
+        set(newRef, { 
+          name: name, 
+          pin: null, 
+          erstellt: new Date().toISOString(),
+          info: { GS_AS: false, GFA: false, VR: false, SW: false, SF: false, PV: false }
+        })
           .then(() => {
             alert(`Fahrschüler '${name}' in der Datenbank angelegt! Er kann sich jetzt anmelden.`);
             document.getElementById('new-student-name').value = "";
@@ -1000,6 +1061,14 @@
         option.textContent = name;
         select.appendChild(option);
       });
+
+      select.onchange = () => updateModalCheckboxes(select.value);
+    }
+
+    function toggleStudentInfo(firebaseKey, infoKey, isChecked) {
+      update(ref(db, `schueler/${firebaseKey}/info`), {
+        [infoKey]: isChecked
+      });
     }
 
     function renderManageStudentList() {
@@ -1026,8 +1095,28 @@
         item.className = 'student-item';
 
         const nameSpan = document.createElement('span');
+        nameSpan.className = 'student-name-text';
         nameSpan.textContent = student.name;
-        nameSpan.style.fontSize = "0.85rem";
+
+        // CHECKBOXES BEREICH MIT RECHTS-DOCKING (margin-left: auto)
+        const checkboxGroup = document.createElement('div');
+        checkboxGroup.className = 'checkbox-group-inline';
+
+        const studentInfo = student.info || {};
+
+        INFO_KEYS.forEach(infoKey => {
+          const label = document.createElement('label');
+          label.className = 'checkbox-item';
+
+          const chk = document.createElement('input');
+          chk.type = 'checkbox';
+          chk.checked = !!studentInfo[infoKey];
+          chk.onchange = (e) => toggleStudentInfo(key, infoKey, e.target.checked);
+
+          label.appendChild(chk);
+          label.appendChild(document.createTextNode(` ${INFO_LABELS[infoKey]}`));
+          checkboxGroup.appendChild(label);
+        });
 
         const deleteBtn = document.createElement('button');
         deleteBtn.className = 'btn-mil btn-alert';
@@ -1037,8 +1126,35 @@
         deleteBtn.onclick = () => removeStudent(key, student.name);
 
         item.appendChild(nameSpan);
+        item.appendChild(checkboxGroup);
         item.appendChild(deleteBtn);
         manageContainer.appendChild(item);
+      });
+    }
+
+    function updateModalCheckboxes(selectedStudentName) {
+      const container = document.getElementById('modal-student-info-checkboxes');
+      if (!container) return;
+      container.innerHTML = "";
+
+      const userEntry = Object.entries(dbUsers).find(([id, s]) => s.name && s.name.toLowerCase() === (selectedStudentName || "").toLowerCase());
+      if (!userEntry) return;
+
+      const [firebaseKey, studentData] = userEntry;
+      const studentInfo = studentData.info || {};
+
+      INFO_KEYS.forEach(infoKey => {
+        const label = document.createElement('label');
+        label.className = 'checkbox-item';
+
+        const chk = document.createElement('input');
+        chk.type = 'checkbox';
+        chk.checked = !!studentInfo[infoKey];
+        chk.onchange = (e) => toggleStudentInfo(firebaseKey, infoKey, e.target.checked);
+
+        label.appendChild(chk);
+        label.appendChild(document.createTextNode(` ${INFO_LABELS[infoKey]}`));
+        container.appendChild(label);
       });
     }
 
@@ -1349,6 +1465,7 @@
     function openBookingModal(day, slotId) {
       currentTargetSlot = `${day}_${slotId}`;
       document.getElementById('student-select-group').classList.remove('hidden');
+      document.getElementById('modal-checkboxes-group').classList.remove('hidden');
       document.getElementById('lesson-type-group').classList.remove('hidden');
       document.getElementById('modal-termin-btn').classList.remove('hidden');
       document.getElementById('modal-theorie-btn').classList.remove('hidden');
@@ -1365,6 +1482,8 @@
         studentSelect.value = slotState.status.replace(" (wartet)", "").trim();
       }
 
+      updateModalCheckboxes(studentSelect.value);
+
       lessonTypeSelect.value = slotState.type ? slotState.type.trim() : "Übungsfahrt";
       if (slotState.location) locationSelect.value = slotState.location;
 
@@ -1374,6 +1493,7 @@
     function openStudentRequestModal(day, slotId) {
       currentTargetSlot = `${day}_${slotId}`;
       document.getElementById('student-select-group').classList.add('hidden');
+      document.getElementById('modal-checkboxes-group').classList.add('hidden');
       document.getElementById('lesson-type-group').classList.add('hidden');
       document.getElementById('modal-termin-btn').classList.add('hidden');
       document.getElementById('modal-theorie-btn').classList.add('hidden');
